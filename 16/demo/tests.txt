@@ -1,0 +1,177 @@
+Found 56 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: messages, staticfiles
+  Apply all migrations: admin, auth, cinema, contenttypes, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying cinema.0001_initial... OK
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+test_admin_genre_changelist (cinema.tests.AdminTests.test_admin_genre_changelist) ... ok
+test_admin_login_and_movie_changelist (cinema.tests.AdminTests.test_admin_login_and_movie_changelist) ... ok
+test_admin_requires_authorization (cinema.tests.AdminTests.test_admin_requires_authorization) ... ok
+test_admin_session_changelist (cinema.tests.AdminTests.test_admin_session_changelist) ... ok
+test_admin_ticket_changelist (cinema.tests.AdminTests.test_admin_ticket_changelist) ... ok
+test_buy_ticket_requires_login (cinema.tests.AuthAndPermissionTests.test_buy_ticket_requires_login) ... ok
+test_buy_ticket_second_time_error (cinema.tests.AuthAndPermissionTests.test_buy_ticket_second_time_error) ... 2026-10-12 01:28:07,705 [INFO] cinema.services: Продан билет #1 на сеанс #1 (ряд 2, место 3)
+2026-10-12 01:28:07,708 [WARNING] cinema.services: Отказ в продаже: место занято (сеанс #1, ряд 2, место 3)
+2026-10-12 01:28:07,708 [WARNING] cinema.views: Ошибка продажи билета: Место (ряд 2, место 3) уже занято на сеансе #1.
+ok
+test_buy_ticket_success (cinema.tests.AuthAndPermissionTests.test_buy_ticket_success) ... 2026-10-12 01:28:08,206 [INFO] cinema.services: Продан билет #1 на сеанс #1 (ряд 3, место 4)
+ok
+test_create_allowed_for_staff (cinema.tests.AuthAndPermissionTests.test_create_allowed_for_staff) ... 2026-10-12 01:28:08,710 [INFO] cinema.views: Создан фильм <Movie: Новый фильм (2020)> пользователем admin16
+ok
+test_create_forbidden_for_regular_user (cinema.tests.AuthAndPermissionTests.test_create_forbidden_for_regular_user) ... 2026-10-12 01:28:09,206 [WARNING] cinema.views: Отказано в доступе пользователю user16 к /movies/create/
+2026-10-12 01:28:09,208 [WARNING] django.request: Forbidden (Permission denied): /movies/create/
+Traceback (most recent call last):
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\mixins.py", line 74, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\mixins.py", line 135, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice16\lab16\cinema\views.py", line 50, in handle_no_permission
+    raise PermissionDenied("Требуются права администратора.")
+django.core.exceptions.PermissionDenied: Требуются права администратора.
+ok
+test_create_form_validation_rejects_duplicate_title (cinema.tests.AuthAndPermissionTests.test_create_form_validation_rejects_duplicate_title) ... ok
+test_create_redirects_anonymous_to_login (cinema.tests.AuthAndPermissionTests.test_create_redirects_anonymous_to_login) ... ok
+test_delete_allowed_for_staff (cinema.tests.AuthAndPermissionTests.test_delete_allowed_for_staff) ... 2026-10-12 01:28:10,185 [WARNING] cinema.views: Удаление фильма <Movie: Фильм без сеансов (2021)> пользователем admin16
+ok
+test_delete_forbidden_for_regular_user (cinema.tests.AuthAndPermissionTests.test_delete_forbidden_for_regular_user) ... 2026-10-12 01:28:10,658 [WARNING] cinema.views: Отказано в доступе пользователю user16 к /movies/1/delete/
+2026-10-12 01:28:10,658 [WARNING] django.request: Forbidden (Permission denied): /movies/1/delete/
+Traceback (most recent call last):
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\mixins.py", line 74, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\mixins.py", line 135, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice16\lab16\cinema\views.py", line 50, in handle_no_permission
+    raise PermissionDenied("Требуются права администратора.")
+django.core.exceptions.PermissionDenied: Требуются права администратора.
+ok
+test_delete_protected_movie_shows_error (cinema.tests.AuthAndPermissionTests.test_delete_protected_movie_shows_error)
+Фильм с сеансами защищён связью PROTECT и не удаляется. ... 2026-10-12 01:28:11,133 [WARNING] cinema.views: Удаление фильма <Movie: Матрица (1999)> пользователем admin16
+2026-10-12 01:28:11,134 [ERROR] cinema.views: Отказ в удалении фильма <Movie: Матрица (1999)>: есть связанные сеансы
+ok
+test_login_page_available (cinema.tests.AuthAndPermissionTests.test_login_page_available) ... ok
+test_login_success (cinema.tests.AuthAndPermissionTests.test_login_success) ... 2026-10-12 01:28:11,615 [INFO] cinema.views: Открыта главная страница пользователем user16
+ok
+test_orm_demo_requires_login (cinema.tests.AuthAndPermissionTests.test_orm_demo_requires_login) ... 2026-10-12 01:28:12,099 [INFO] cinema.orm_demo: ORM-демонстрация выполнена, строк отчёта: 18
+ok
+test_session_create_forbidden_for_regular_user (cinema.tests.AuthAndPermissionTests.test_session_create_forbidden_for_regular_user) ... 2026-10-12 01:28:12,577 [WARNING] cinema.views: Отказано в доступе пользователю user16 к /sessions/create/
+2026-10-12 01:28:12,578 [WARNING] django.request: Forbidden (Permission denied): /sessions/create/
+Traceback (most recent call last):
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\exception.py", line 56, in inner
+    response = get_response(request)
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\core\handlers\base.py", line 199, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\mixins.py", line 74, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Artem\AppData\Local\Programs\Python\Python313\Lib\site-packages\django\contrib\auth\mixins.py", line 135, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice16\lab16\cinema\views.py", line 50, in handle_no_permission
+    raise PermissionDenied("Требуются права администратора.")
+django.core.exceptions.PermissionDenied: Требуются права администратора.
+ok
+test_update_allowed_for_staff (cinema.tests.AuthAndPermissionTests.test_update_allowed_for_staff) ... 2026-10-12 01:28:13,059 [INFO] cinema.views: Изменён фильм <Movie: Матрица (режиссёрская версия) (1999)> пользователем admin16
+ok
+test_hall_capacity (cinema.tests.ModelTests.test_hall_capacity) ... ok
+test_movie_clean_requires_title (cinema.tests.ModelTests.test_movie_clean_requires_title) ... ok
+test_movie_clean_year_in_future (cinema.tests.ModelTests.test_movie_clean_year_in_future) ... ok
+test_movie_genres_many_to_many (cinema.tests.ModelTests.test_movie_genres_many_to_many) ... ok
+test_movie_genres_text (cinema.tests.ModelTests.test_movie_genres_text) ... ok
+test_movie_rating_validator (cinema.tests.ModelTests.test_movie_rating_validator) ... ok
+test_movie_str (cinema.tests.ModelTests.test_movie_str) ... ok
+test_session_end_time (cinema.tests.ModelTests.test_session_end_time) ... ok
+test_session_free_seats (cinema.tests.ModelTests.test_session_free_seats) ... ok
+test_session_no_overlap_in_other_hall (cinema.tests.ModelTests.test_session_no_overlap_in_other_hall) ... ok
+test_session_overlap_validation (cinema.tests.ModelTests.test_session_overlap_validation) ... ok
+test_session_related_fields (cinema.tests.ModelTests.test_session_related_fields) ... ok
+test_session_revenue_aggregate (cinema.tests.ModelTests.test_session_revenue_aggregate) ... ok
+test_ticket_clean_row_bounds (cinema.tests.ModelTests.test_ticket_clean_row_bounds) ... ok
+test_ticket_unique_seat_constraint (cinema.tests.ModelTests.test_ticket_unique_seat_constraint) ... ok
+test_custom_404_handler (cinema.tests.PublicViewTests.test_custom_404_handler) ... 2026-10-12 01:28:13,086 [WARNING] cinema.views: 404: страница не найдена — /no-such-address/
+2026-10-12 01:28:13,088 [WARNING] django.request: Not Found: /no-such-address/
+ok
+test_genre_list_page (cinema.tests.PublicViewTests.test_genre_list_page) ... ok
+test_index_page (cinema.tests.PublicViewTests.test_index_page) ... 2026-10-12 01:28:13,092 [INFO] cinema.views: Открыта главная страница пользователем AnonymousUser
+ok
+test_movie_detail_404 (cinema.tests.PublicViewTests.test_movie_detail_404) ... 2026-10-12 01:28:13,099 [WARNING] cinema.views: 404: страница не найдена — /movies/99999/
+2026-10-12 01:28:13,099 [WARNING] django.request: Not Found: /movies/99999/
+ok
+test_movie_detail_page (cinema.tests.PublicViewTests.test_movie_detail_page) ... ok
+test_movie_list_filter_by_genre (cinema.tests.PublicViewTests.test_movie_list_filter_by_genre) ... 2026-10-12 01:28:13,107 [INFO] cinema.views: Список фильмов: GET=genre=1, сортировка=-rating
+ok
+test_movie_list_filter_by_rating (cinema.tests.PublicViewTests.test_movie_list_filter_by_rating) ... 2026-10-12 01:28:13,117 [INFO] cinema.views: Список фильмов: GET=min_rating=9.0, сортировка=-rating
+ok
+test_movie_list_filter_by_year (cinema.tests.PublicViewTests.test_movie_list_filter_by_year) ... 2026-10-12 01:28:13,121 [INFO] cinema.views: Список фильмов: GET=year_from=2005, сортировка=-rating
+ok
+test_movie_list_page (cinema.tests.PublicViewTests.test_movie_list_page) ... 2026-10-12 01:28:13,127 [INFO] cinema.views: Список фильмов: GET=, сортировка=-rating
+ok
+test_movie_list_pagination (cinema.tests.PublicViewTests.test_movie_list_pagination) ... 2026-10-12 01:28:13,134 [INFO] cinema.views: Список фильмов: GET=, сортировка=-rating
+2026-10-12 01:28:13,139 [INFO] cinema.views: Список фильмов: GET=page=2, сортировка=-rating
+ok
+test_movie_list_search (cinema.tests.PublicViewTests.test_movie_list_search) ... 2026-10-12 01:28:13,146 [INFO] cinema.views: Список фильмов: GET=q=%D0%9C%D0%B0%D1%82%D1%80%D0%B8%D1%86%D0%B0, сортировка=-rating
+ok
+test_movie_list_search_no_results (cinema.tests.PublicViewTests.test_movie_list_search_no_results) ... 2026-10-12 01:28:13,150 [INFO] cinema.views: Список фильмов: GET=q=%D0%BD%D0%B5%D1%82%D0%B0%D0%BA%D0%BE%D0%B3%D0%BE, сортировка=-rating
+ok
+test_movie_list_sorting_ascending (cinema.tests.PublicViewTests.test_movie_list_sorting_ascending) ... 2026-10-12 01:28:13,153 [INFO] cinema.views: Список фильмов: GET=sort=title, сортировка=title
+ok
+test_session_detail_page (cinema.tests.PublicViewTests.test_session_detail_page) ... ok
+test_session_list_filter_by_hall (cinema.tests.PublicViewTests.test_session_list_filter_by_hall) ... ok
+test_session_list_sorting_by_price (cinema.tests.PublicViewTests.test_session_list_sorting_by_price) ... ok
+test_statistics_page (cinema.tests.PublicViewTests.test_statistics_page) ... ok
+test_book_ticket_duplicate (cinema.tests.ServiceTests.test_book_ticket_duplicate) ... 2026-10-12 01:28:13,181 [INFO] cinema.services: Продан билет #1 на сеанс #1 (ряд 2, место 2)
+2026-10-12 01:28:13,182 [WARNING] cinema.services: Отказ в продаже: место занято (сеанс #1, ряд 2, место 2)
+ok
+test_book_ticket_out_of_hall (cinema.tests.ServiceTests.test_book_ticket_out_of_hall) ... 2026-10-12 01:28:13,182 [WARNING] cinema.services: Отказ в продаже: место вне зала (сеанс #1, ряд 50, место 1)
+ok
+test_book_ticket_success (cinema.tests.ServiceTests.test_book_ticket_success) ... 2026-10-12 01:28:13,183 [INFO] cinema.services: Продан билет #1 на сеанс #1 (ряд 1, место 2)
+ok
+test_safe_book_ticket_returns_error_text (cinema.tests.ServiceTests.test_safe_book_ticket_returns_error_text) ... 2026-10-12 01:28:13,184 [WARNING] cinema.services: Отказ в продаже: место вне зала (сеанс #1, ряд 99, место 99)
+ok
+----------------------------------------------------------------------
+Ran 56 tests in 9.449s
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...

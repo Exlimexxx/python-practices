@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Афиша фильмов{% endblock %}
+{% block content %}
+<h2>Афиша фильмов</h2>
+
+<form class="filters" method="get">
+    {% for field in form %}
+        <div>
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+        </div>
+    {% endfor %}
+    <div><button class="btn" type="submit">Применить</button></div>
+    <div><a class="btn secondary" href="{% url 'cinema:movie_list' %}">Сбросить</a></div>
+</form>
+
+<p>Всего найдено фильмов: <b>{{ paginator.count }}</b>.</p>
+
+{% if user.is_staff %}
+    <p><a class="btn" href="{% url 'cinema:movie_create' %}">Добавить фильм</a></p>
+{% endif %}
+
+<table>
+    <tr>
+        <th>Название</th><th>Жанры</th><th>Год</th><th>Рейтинг</th>
+        <th>Длительность</th><th>Сеансов</th><th>Действия</th>
+    </tr>
+    {% for movie in movies %}
+        <tr>
+            <td><a href="{% url 'cinema:movie_detail' movie.pk %}">{{ movie.title }}</a></td>
+            <td>{{ movie.genres_text }}</td>
+            <td>{{ movie.year }}</td>
+            <td>{{ movie.rating }}</td>
+            <td>{{ movie.duration_minutes }} мин</td>
+            <td>{{ movie.sessions_total }}</td>
+            <td>
+                <a href="{% url 'cinema:movie_detail' movie.pk %}">Просмотр</a>
+                {% if user.is_staff %}
+                    | <a href="{% url 'cinema:movie_update' movie.pk %}">Изменить</a>
+                    | <a href="{% url 'cinema:movie_delete' movie.pk %}">Удалить</a>
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="7">По заданным условиям фильмы не найдены.</td></tr>
+    {% endfor %}
+</table>
+
+{% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="{% querystring page=page_obj.previous_page_number %}">Назад</a>
+        {% endif %}
+        {% for num in paginator.page_range %}
+            {% if num == page_obj.number %}
+                <span><b>{{ num }}</b></span>
+            {% else %}
+                <a href="{% querystring page=num %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <a href="{% querystring page=page_obj.next_page_number %}">Вперёд</a>
+        {% endif %}
+        <span>Страница {{ page_obj.number }} из {{ paginator.num_pages }}</span>
+    </div>
+{% endif %}
+{% endblock %}

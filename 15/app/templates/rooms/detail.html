@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Номер {{ room.number }}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs">
+    <a href="{{ url_for('web.room_list') }}">Номера</a> / № {{ room.number }}
+</nav>
+<h1>Номер № {{ room.number }}</h1>
+
+<div class="detail-grid">
+    <dl class="details">
+        <dt>Тип</dt><dd>{{ room.room_type }}</dd>
+        <dt>Этаж</dt><dd>{{ room.floor }}</dd>
+        <dt>Вместимость</dt><dd>{{ room.capacity }} чел.</dd>
+        <dt>Цена за ночь</dt><dd>{{ "%.2f"|format(room.price_per_night) }} ₽</dd>
+        <dt>Статус</dt><dd>{{ room.status_label }}</dd>
+        <dt>Описание</dt><dd>{{ room.description or '—' }}</dd>
+    </dl>
+</div>
+
+<div class="actions">
+    <a class="btn btn-primary" href="{{ url_for('web.booking_new_for_room', room_id=room.id) }}">Забронировать</a>
+    <a class="btn" href="{{ url_for('web.room_edit', room_id=room.id) }}">Редактировать</a>
+    <form method="post" action="{{ url_for('web.room_delete', room_id=room.id) }}"
+          onsubmit="return confirm('Удалить номер?');">
+        <button class="btn btn-danger" type="submit">Удалить</button>
+    </form>
+</div>
+
+<h2>Бронирования номера</h2>
+{% if bookings %}
+<table class="data-table">
+    <thead><tr><th>№</th><th>Гость</th><th>Заезд</th><th>Выезд</th><th>Статус</th><th>Сумма</th></tr></thead>
+    <tbody>
+    {% for b in bookings %}
+        <tr>
+            <td><a href="{{ url_for('web.booking_detail', booking_id=b.id) }}">{{ b.id }}</a></td>
+            <td><a href="{{ url_for('web.guest_detail', guest_id=b.guest_id) }}">{{ b.guest.full_name if b.guest else '—' }}</a></td>
+            <td>{{ b.check_in }}</td>
+            <td>{{ b.check_out }}</td>
+            <td><span class="badge badge-{{ b.status }}">{{ b.status_label }}</span></td>
+            <td>{{ "%.2f"|format(b.total_price) }} ₽</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">У этого номера ещё нет бронирований.</p>
+{% endif %}
+{% endblock %}

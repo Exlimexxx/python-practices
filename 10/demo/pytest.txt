@@ -1,0 +1,37 @@
+========================================================================
+ ДЕМОНСТРАЦИЯ 2. Автоматические тесты pytest
+========================================================================
+Команда: C:\Users\Artem\AppData\Local\Programs\Python\Python313\python.exe -m pytest -v
+============================= test session starts =============================
+platform win32 -- Python 3.13.2, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Artem\AppData\Local\Programs\Python\Python313\python.exe
+rootdir: C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice10
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.15.1, platformdirs-4.13.0, cov-7.1.0
+collecting ... collected 22 items
+
+tests/test_api.py::test_get_movies_returns_200_and_json_list PASSED      [  4%]
+tests/test_api.py::test_get_movies_filtering_and_sorting PASSED          [  9%]
+tests/test_api.py::test_get_movie_200_and_404 PASSED                     [ 13%]
+tests/test_api.py::test_get_movie_with_invalid_id_returns_400 PASSED     [ 18%]
+tests/test_api.py::test_post_creates_201_and_rejects_invalid_400 PASSED  [ 22%]
+tests/test_api.py::test_post_with_broken_json_returns_400 PASSED         [ 27%]
+tests/test_api.py::test_put_replaces_movie PASSED                        [ 31%]
+tests/test_api.py::test_patch_changes_only_given_fields PASSED           [ 36%]
+tests/test_api.py::test_delete_returns_204_and_then_404 PASSED           [ 40%]
+tests/test_api.py::test_by_genre_specialized_endpoint PASSED             [ 45%]
+tests/test_api.py::test_method_not_allowed_405 PASSED                    [ 50%]
+tests/test_api.py::test_unknown_route_returns_404 PASSED                 [ 54%]
+tests/test_repository.py::test_create_assigns_incremental_id PASSED      [ 59%]
+tests/test_repository.py::test_get_all_get_by_id_and_delete PASSED       [ 63%]
+tests/test_repository.py::test_update_replaces_object_but_keeps_id PASSED [ 68%]
+tests/test_service.py::test_list_movies_filter_by_genre_and_min_rating PASSED [ 72%]
+tests/test_service.py::test_list_movies_filter_by_max_price_and_sorting PASSED [ 77%]
+tests/test_service.py::test_create_movie_assigns_id_and_validates PASSED [ 81%]
+tests/test_service.py::test_get_and_delete_movie_not_found PASSED        [ 86%]
+tests/test_service.py::test_patch_changes_only_provided_fields PASSED    [ 90%]
+tests/test_service.py::test_get_movies_by_genre_special_operation PASSED [ 95%]
+tests/test_service.py::test_statistics_returns_average_values PASSED     [100%]
+
+============================= 22 passed in 0.08s ==============================
+Код возврата pytest: 0

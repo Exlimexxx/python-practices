@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Ошибка сервера{% endblock %}
+{% block content %}
+<h2>500 — внутренняя ошибка сервера</h2>
+<p>Произошла непредвиденная ошибка. Сведения записаны в журнал logs/cinema.log.</p>
+<p><a class="btn" href="{% url 'cinema:index' %}">На главную</a></p>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Редактирование брони' if booking else 'Новое бронирование' }}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs">
+    <a href="{{ url_for('web.booking_list') }}">Бронирования</a> / {{ 'редактирование № ' ~ booking.id if booking else 'создание' }}
+</nav>
+<h1>{{ 'Редактирование брони № ' ~ booking.id if booking else 'Новое бронирование' }}</h1>
+<p class="muted">Даты не должны пересекаться с существующими подтверждёнными бронированиями того же номера.
+Стоимость рассчитывается автоматически: ночи × цена за ночь.</p>
+
+<form class="entity-form" method="post">
+    <label>Номер *
+        <select name="room_id" required>
+            <option value="">— выберите номер —</option>
+            {% for r in all_rooms %}
+                {% set current = form.get('room_id')|string if form.get('room_id') else (booking.room_id|string if booking else '') %}
+                <option value="{{ r.id }}" {{ 'selected' if current == r.id|string else '' }}>
+                    № {{ r.number }} · {{ r.room_type }} · {{ "%.0f"|format(r.price_per_night) }} ₽/ночь · до {{ r.capacity }} чел.{{ '' if r.is_active else ' (закрыт)' }}
+                </option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Гость *
+        <select name="guest_id" required>
+            <option value="">— выберите гостя —</option>
+            {% for g in guests %}
+                {% set current = form.get('guest_id')|string if form.get('guest_id') else (booking.guest_id|string if booking else '') %}
+                <option value="{{ g.id }}" {{ 'selected' if current == g.id|string else '' }}>{{ g.full_name }} ({{ g.email }})</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Дата заезда *
+        <input type="date" name="check_in" required
+               value="{{ form.get('check_in') or (booking.check_in if booking else '') }}">
+    </label>
+    <label>Дата выезда *
+        <input type="date" name="check_out" required
+               value="{{ form.get('check_out') or (booking.check_out if booking else '') }}">
+    </label>
+    <label>Количество гостей *
+        <input type="number" name="guests_count" min="1" max="20" required
+               value="{{ form.get('guests_count') or (booking.guests_count if booking else 1) }}">
+    </label>
+    <label>Статус
+        <select name="status">
+            {% set current_status = form.get('status') or (booking.status if booking else 'confirmed') %}
+            {% for key, label in statuses.items() %}
+                <option value="{{ key }}" {{ 'selected' if current_status == key else '' }}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Комментарий
+        <textarea name="comment" rows="3" maxlength="1000">{{ form.get('comment') or (booking.comment if booking else '') }}</textarea>
+    </label>
+    <div class="form-actions">
+        <button class="btn btn-primary" type="submit">{{ 'Сохранить' if booking else 'Забронировать' }}</button>
+        <a class="btn btn-link" href="{{ url_for('web.booking_list') }}">Отмена</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,43 @@
+==============================================================================
+ДЕМОНСТРАЦИЯ 4: АВТОМАТИЧЕСКИЕ ТЕСТЫ (pytest)
+Дата и время запуска: 2026-10-11 15:09:07
+Команда: python -m pytest tests -v -p no:cacheprovider --color=no
+Тесты: Repository (6), Service (9), Protocol (7), интеграционные (5).
+==============================================================================
+============================= test session starts =============================
+platform win32 -- Python 3.13.2, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Artem\AppData\Local\Programs\Python\Python313\python.exe
+rootdir: C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice9
+plugins: anyio-4.15.1, platformdirs-4.13.0, cov-7.1.0
+collecting ... collected 28 items
+
+tests/test_integration.py::test_full_chain_create_get_average_delete PASSED [  3%]
+tests/test_integration.py::test_error_handling_unknown_command_and_bad_json PASSED [  7%]
+tests/test_integration.py::test_three_clients_work_concurrently PASSED   [ 10%]
+tests/test_integration.py::test_client_timeout_triggers_remote_timeout_error PASSED [ 14%]
+tests/test_integration.py::test_udp_status_operation PASSED              [ 17%]
+tests/test_protocol.py::test_encode_decode_roundtrip_with_newline PASSED [ 21%]
+tests/test_protocol.py::test_request_parse_and_encode PASSED             [ 25%]
+tests/test_protocol.py::test_decode_invalid_json_raises_protocol_error PASSED [ 28%]
+tests/test_protocol.py::test_request_without_command_raises_protocol_error PASSED [ 32%]
+tests/test_protocol.py::test_request_with_data_not_object_raises_protocol_error PASSED [ 35%]
+tests/test_protocol.py::test_response_ok_and_error_serialization PASSED  [ 39%]
+tests/test_protocol.py::test_line_buffer_splits_stream_into_messages PASSED [ 42%]
+tests/test_repository.py::test_add_assigns_id_and_get_returns_copy PASSED [ 46%]
+tests/test_repository.py::test_add_duplicate_id_raises_conflict PASSED   [ 50%]
+tests/test_repository.py::test_get_missing_student_raises_not_found PASSED [ 53%]
+tests/test_repository.py::test_update_existing_student PASSED            [ 57%]
+tests/test_repository.py::test_delete_removes_student PASSED             [ 60%]
+tests/test_repository.py::test_get_all_sorted_by_id_and_validation PASSED [ 64%]
+tests/test_service.py::test_create_student_from_dict PASSED              [ 67%]
+tests/test_service.py::test_create_student_missing_fields_raises_validation PASSED [ 71%]
+tests/test_service.py::test_create_student_with_invalid_grades_raises_validation PASSED [ 75%]
+tests/test_service.py::test_average_grade_special_command PASSED         [ 78%]
+tests/test_service.py::test_average_grade_for_missing_student_raises_not_found PASSED [ 82%]
+tests/test_service.py::test_update_student_partial_changes PASSED        [ 85%]
+tests/test_service.py::test_update_student_unknown_field_raises_validation PASSED [ 89%]
+tests/test_service.py::test_filter_students_by_group_and_average PASSED  [ 92%]
+tests/test_service.py::test_delete_student_and_status PASSED             [ 96%]
+tests/test_service.py::test_group_summary PASSED                         [100%]
+
+============================= 28 passed in 3.61s ==============================
+--- код возврата pytest: 0 ---

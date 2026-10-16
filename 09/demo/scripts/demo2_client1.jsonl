@@ -1,0 +1,6 @@
+# Клиент 1: работает со студентом id=1
+{"command": "get", "data": {"id": 1}}
+{"command": "average_grade", "data": {"id": 1}}
+{"command": "sleep", "data": {"seconds": 1}}
+{"command": "update", "data": {"id": 1, "email": "client1-new@bmstu.ru"}}
+{"command": "list", "data": {"name_contains": "Иванов"}}

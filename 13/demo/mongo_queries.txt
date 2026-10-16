@@ -1,0 +1,154 @@
+INFO     app.repository     | Индексы созданы: ['genres_rating', 'director_name', 'year_desc']
+INFO     app.repository     | Создан фильм 'Побег из Шоушенка' c _id=6acc0b5acc79e4bf6fc18ebb
+INFO     app.repository     | Создан фильм 'Крёстный отец' c _id=6acc0b5acc79e4bf6fc18ebc
+INFO     app.repository     | Создан фильм 'Тёмный рыцарь' c _id=6acc0b5acc79e4bf6fc18ebd
+INFO     app.repository     | Создан фильм 'Криминальное чтиво' c _id=6acc0b5acc79e4bf6fc18ebe
+INFO     app.repository     | Создан фильм 'Форрест Гамп' c _id=6acc0b5acc79e4bf6fc18ebf
+INFO     app.repository     | Создан фильм 'Начало' c _id=6acc0b5acc79e4bf6fc18ec0
+INFO     app.repository     | Создан фильм 'Матрица' c _id=6acc0b5acc79e4bf6fc18ec1
+INFO     app.repository     | Создан фильм 'Интерстеллар' c _id=6acc0b5acc79e4bf6fc18ec2
+INFO     app.repository     | Создан фильм 'Бойцовский клуб' c _id=6acc0b5acc79e4bf6fc18ec3
+INFO     app.repository     | Создан фильм 'Леон' c _id=6acc0b5acc79e4bf6fc18ec4
+INFO     app.repository     | Создан фильм 'Гладиатор' c _id=6acc0b5acc79e4bf6fc18ec5
+INFO     app.repository     | Создан фильм 'Отступники' c _id=6acc0b5acc79e4bf6fc18ec6
+INFO     app.repository     | Создан фильм 'Джанго освобождённый' c _id=6acc0b5acc79e4bf6fc18ec7
+INFO     app.repository     | Создан фильм 'Престиж' c _id=6acc0b5acc79e4bf6fc18ec8
+INFO     app.repository     | Создан фильм 'Властелин колец: Братство Кольца' c _id=6acc0b5acc79e4bf6fc18ec9
+INFO     app.repository     | Создан фильм 'Властелин колец: Две крепости' c _id=6acc0b5acc79e4bf6fc18eca
+INFO     app.repository     | Создан фильм 'Паразиты' c _id=6acc0b5acc79e4bf6fc18ecb
+INFO     app.repository     | Создан фильм 'Джокер' c _id=6acc0b5acc79e4bf6fc18ecc
+INFO     app.repository     | Создан фильм 'Однажды в Голливуде' c _id=6acc0b5acc79e4bf6fc18ecd
+INFO     app.repository     | Создан фильм 'Гравитация' c _id=6acc0b5acc79e4bf6fc18ece
+INFO     app.repository     | Создан фильм 'Дюна' c _id=6acc0b5acc79e4bf6fc18ecf
+INFO     app.repository     | Создан фильм 'Бегущий по лезвию 2049' c _id=6acc0b5acc79e4bf6fc18ed0
+INFO     app.repository     | Создан фильм 'Оппенгеймер' c _id=6acc0b5acc79e4bf6fc18ed1
+INFO     app.repository     | Создан фильм 'Барби' c _id=6acc0b5acc79e4bf6fc18ed2
+
+==============================================================================
+2. ЗАПРОСЫ MONGODB К КОЛЛЕКЦИИ cinema.movie
+==============================================================================
+MongoDB : реальный сервер
+Redis   : in-memory fallback
+          причина: TimeoutError: Timeout connecting to server
+Документов movie: 24
+
+--- Запрос 1: фильтр по элементу массива genres = 'фантастика'
+    найдено документов: 7
+    * title=Начало, rating=8.8
+    * title=Матрица, rating=8.7
+    * title=Интерстеллар, rating=8.7
+    * title=Престиж, rating=8.5
+    * title=Дюна, rating=8.0
+    * title=Бегущий по лезвию 2049, rating=8.0
+    * title=Гравитация, rating=7.7
+
+--- Запрос 2: фильтр по числовому полю rating >= 8.5
+    найдено документов: 16
+    * title=Побег из Шоушенка, rating=9.3
+    * title=Крёстный отец, rating=9.2
+    * title=Тёмный рыцарь, rating=9.0
+    * title=Криминальное чтиво, rating=8.9
+    * title=Форрест Гамп, rating=8.8
+    * title=Начало, rating=8.8
+    * title=Бойцовский клуб, rating=8.8
+    * title=Властелин колец: Братство Кольца, rating=8.8
+    ... ещё 8
+
+--- Запрос 3: фильтр по полю-категории status = 'archived'
+    найдено документов: 6
+    * title=Криминальное чтиво, year=1994
+    * title=Бойцовский клуб, year=1999
+    * title=Отступники, year=2006
+    * title=Гравитация, year=2013
+    * title=Бегущий по лезвию 2049, year=2017
+    * title=Однажды в Голливуде, year=2019
+
+--- Запрос 4: сортировка по году (убывание), limit 5
+    найдено документов: 5
+    * title=Оппенгеймер, year=2023
+    * title=Барби, year=2023
+    * title=Дюна, year=2021
+    * title=Паразиты, year=2019
+    * title=Джокер, year=2019
+
+--- Запрос 5: сортировка по рейтингу (убывание) и году (возрастание)
+    найдено документов: 5
+    * title=Побег из Шоушенка, rating=9.3, year=1994
+    * title=Крёстный отец, rating=9.2, year=1972
+    * title=Тёмный рыцарь, rating=9.0, year=2008
+    * title=Криминальное чтиво, rating=8.9, year=1994
+    * title=Форрест Гамп, rating=8.8, year=1994
+
+--- Запрос 6: три самых длинных фильма (sort duration + limit 3)
+    найдено документов: 3
+    * title=Оппенгеймер, duration=180
+    * title=Властелин колец: Две крепости, duration=179
+    * title=Властелин колец: Братство Кольца, duration=178
+
+--- Запрос 7: несколько условий: жанр драма И рейтинг >= 8.8 И год < 2010
+    найдено документов: 5
+    * title=Побег из Шоушенка, rating=9.3, year=1994
+    * title=Крёстный отец, rating=9.2, year=1972
+    * title=Криминальное чтиво, rating=8.9, year=1994
+    * title=Форрест Гамп, rating=8.8, year=1994
+    * title=Бойцовский клуб, rating=8.8, year=1999
+
+--- Запрос 8: поиск по вложенному полю director.name = 'Кристофер Нолан'
+    найдено документов: 5
+    * title=Престиж, year=2006
+    * title=Тёмный рыцарь, year=2008
+    * title=Начало, year=2010
+    * title=Интерстеллар, year=2014
+    * title=Оппенгеймер, year=2023
+
+--- Запрос 9: вложенное поле director.country = 'США' и rating > 8.7
+    найдено документов: 7
+    * title=Побег из Шоушенка, rating=9.3
+    * title=Крёстный отец, rating=9.2
+    * title=Тёмный рыцарь, rating=9.0
+    * title=Криминальное чтиво, rating=8.9
+    * title=Форрест Гамп, rating=8.8
+    * title=Начало, rating=8.8
+    * title=Бойцовский клуб, rating=8.8
+
+--- Запрос 10: поиск по элементу массива actors = 'Леонардо ДиКаприо'
+    найдено документов: 3
+    * title=Отступники, year=None
+    * title=Начало, year=None
+    * title=Однажды в Голливуде, year=None
+
+--- Запрос 11: массив содержит все элементы ($all: драма + криминал)
+    найдено документов: 3
+    * title=Крёстный отец, genres=['драма', 'криминал']
+    * title=Криминальное чтиво, genres=['криминал', 'драма']
+    * title=Джокер, genres=['драма', 'криминал']
+
+--- Запрос 12: запрос по вложенному массиву sessions.hall = 'IMAX'
+    найдено документов: 4
+    * title=Властелин колец: Братство Кольца
+    * title=Гладиатор
+    * title=Джанго освобождённый
+    * title=Джокер
+
+--- Запрос 13: regex по названию: ^Властелин
+    найдено документов: 2
+    * title=Властелин колец: Братство Кольца, year=2001
+    * title=Властелин колец: Две крепости, year=2002
+
+--- Запрос 14: статус входит в список ($in: coming_soon)
+    найдено документов: 2
+    * title=Барби, status=coming_soon
+    * title=Оппенгеймер, status=coming_soon
+
+--- Запрос 15: проекция без _id: только title и rating (rating >= 9.0)
+    найдено документов: 3
+    * title=Побег из Шоушенка, rating=9.3
+    * title=Крёстный отец, rating=9.2
+    * title=Тёмный рыцарь, rating=9.0
+
+--- Запрос 16: distinct('genres') -> 10 уникальных жанров
+    биография, боевик, вестерн, драма, комедия, криминал, приключения, триллер, фантастика, фэнтези
+
+--- Запрос 17: count документов с сеансом дороже 400 руб. = 18
+
+ИТОГО выполнено различных запросов: 17

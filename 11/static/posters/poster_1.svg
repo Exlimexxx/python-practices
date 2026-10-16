@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450">
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1b2a4a"/>
+      <stop offset="100%" stop-color="#0b1020"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="450" fill="url(#bg1)"/>
+  <rect x="16" y="16" width="268" height="418" fill="none" stroke="#f5c518" stroke-width="2" opacity="0.8"/>
+  <circle cx="150" cy="150" r="62" fill="none" stroke="#f5c518" stroke-width="3" opacity="0.9"/>
+  <polygon points="132,118 132,182 186,150" fill="#f5c518"/>
+  <text x="150" y="268" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
+        font-size="22" font-weight="bold" fill="#ffffff">Начало</text>
+  <text x="150" y="300" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
+        font-size="14" fill="#f5c518">фантастика • боевик</text>
+  <text x="150" y="404" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
+        font-size="12" fill="#ffffff" opacity="0.75">Кинотеатр • CDN poster 1</text>
+</svg>

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Гости{% endblock %}
+{% block content %}
+<h1>Гости отеля</h1>
+
+<div class="toolbar">
+    <a class="btn btn-primary" href="{{ url_for('web.guest_create') }}">+ Добавить гостя</a>
+    <span class="muted">Найдено записей: {{ guests|length }}</span>
+</div>
+
+<form class="filter-form" method="get" action="{{ url_for('web.guest_list') }}">
+    <label>Поиск
+        <input type="text" name="search" value="{{ filters.search }}" placeholder="ФИО, email, телефон">
+    </label>
+    <label>Город
+        <select name="city">
+            <option value="">— все —</option>
+            {% for c in cities %}
+                <option value="{{ c }}" {{ 'selected' if filters.city == c else '' }}>{{ c }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Бронирования
+        <select name="has_bookings">
+            <option value="" {{ 'selected' if filters.has_bookings == '' else '' }}>— все —</option>
+            <option value="1" {{ 'selected' if filters.has_bookings == '1' else '' }}>есть брони</option>
+            <option value="0" {{ 'selected' if filters.has_bookings == '0' else '' }}>нет броней</option>
+        </select>
+    </label>
+    <label>Сортировка
+        <select name="sort">
+            <option value="name" {{ 'selected' if filters.sort == 'name' else '' }}>по ФИО</option>
+            <option value="email" {{ 'selected' if filters.sort == 'email' else '' }}>по email</option>
+            <option value="city" {{ 'selected' if filters.sort == 'city' else '' }}>по городу</option>
+        </select>
+    </label>
+    <label>Порядок
+        <select name="order">
+            <option value="asc" {{ 'selected' if filters.order == 'asc' else '' }}>возрастание</option>
+            <option value="desc" {{ 'selected' if filters.order == 'desc' else '' }}>убывание</option>
+        </select>
+    </label>
+    <button class="btn" type="submit">Применить</button>
+    <a class="btn btn-link" href="{{ url_for('web.guest_list') }}">Сбросить</a>
+</form>
+
+{% if guests %}
+<table class="data-table">
+    <thead><tr><th>ФИО</th><th>Email</th><th>Телефон</th><th>Город</th><th>Броней</th><th>Действия</th></tr></thead>
+    <tbody>
+    {% for guest in guests %}
+        <tr>
+            <td><a href="{{ url_for('web.guest_detail', guest_id=guest.id) }}">{{ guest.full_name }}</a></td>
+            <td>{{ guest.email }}</td>
+            <td>{{ guest.phone or '—' }}</td>
+            <td>{{ guest.city or '—' }}</td>
+            <td>{{ guest.bookings|length }}</td>
+            <td class="row-actions">
+                <a href="{{ url_for('web.guest_detail', guest_id=guest.id) }}">просмотр</a>
+                <a href="{{ url_for('web.guest_edit', guest_id=guest.id) }}">изменить</a>
+                <form method="post" action="{{ url_for('web.guest_delete', guest_id=guest.id) }}"
+                      onsubmit="return confirm('Удалить гостя и все его бронирования?');">
+                    <button class="link-danger" type="submit">удалить</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">Гости не найдены.</p>
+{% endif %}
+{% endblock %}

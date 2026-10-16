@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Редактирование фильма{% else %}Новый фильм{% endif %}{% endblock %}
+{% block content %}
+<h2>{% if object %}Редактирование фильма «{{ object.title }}»{% else %}Добавление фильма{% endif %}</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Сохранить</button>
+    <a class="btn secondary" href="{% url 'cinema:movie_list' %}">Отмена</a>
+</form>
+{% endblock %}

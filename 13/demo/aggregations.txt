@@ -1,0 +1,80 @@
+INFO     app.repository     | Индексы созданы: ['genres_rating', 'director_name', 'year_desc']
+INFO     app.repository     | Создан фильм 'Побег из Шоушенка' c _id=6acc0b5bfe8a8777aedd7677
+INFO     app.repository     | Создан фильм 'Крёстный отец' c _id=6acc0b5bfe8a8777aedd7678
+INFO     app.repository     | Создан фильм 'Тёмный рыцарь' c _id=6acc0b5bfe8a8777aedd7679
+INFO     app.repository     | Создан фильм 'Криминальное чтиво' c _id=6acc0b5bfe8a8777aedd767a
+INFO     app.repository     | Создан фильм 'Форрест Гамп' c _id=6acc0b5bfe8a8777aedd767b
+INFO     app.repository     | Создан фильм 'Начало' c _id=6acc0b5bfe8a8777aedd767c
+INFO     app.repository     | Создан фильм 'Матрица' c _id=6acc0b5bfe8a8777aedd767d
+INFO     app.repository     | Создан фильм 'Интерстеллар' c _id=6acc0b5bfe8a8777aedd767e
+INFO     app.repository     | Создан фильм 'Бойцовский клуб' c _id=6acc0b5bfe8a8777aedd767f
+INFO     app.repository     | Создан фильм 'Леон' c _id=6acc0b5bfe8a8777aedd7680
+INFO     app.repository     | Создан фильм 'Гладиатор' c _id=6acc0b5bfe8a8777aedd7681
+INFO     app.repository     | Создан фильм 'Отступники' c _id=6acc0b5bfe8a8777aedd7682
+INFO     app.repository     | Создан фильм 'Джанго освобождённый' c _id=6acc0b5bfe8a8777aedd7683
+INFO     app.repository     | Создан фильм 'Престиж' c _id=6acc0b5bfe8a8777aedd7684
+INFO     app.repository     | Создан фильм 'Властелин колец: Братство Кольца' c _id=6acc0b5bfe8a8777aedd7685
+INFO     app.repository     | Создан фильм 'Властелин колец: Две крепости' c _id=6acc0b5bfe8a8777aedd7686
+INFO     app.repository     | Создан фильм 'Паразиты' c _id=6acc0b5bfe8a8777aedd7687
+INFO     app.repository     | Создан фильм 'Джокер' c _id=6acc0b5bfe8a8777aedd7688
+INFO     app.repository     | Создан фильм 'Однажды в Голливуде' c _id=6acc0b5bfe8a8777aedd7689
+INFO     app.repository     | Создан фильм 'Гравитация' c _id=6acc0b5bfe8a8777aedd768a
+INFO     app.repository     | Создан фильм 'Дюна' c _id=6acc0b5bfe8a8777aedd768b
+INFO     app.repository     | Создан фильм 'Бегущий по лезвию 2049' c _id=6acc0b5bfe8a8777aedd768c
+INFO     app.repository     | Создан фильм 'Оппенгеймер' c _id=6acc0b5bfe8a8777aedd768d
+INFO     app.repository     | Создан фильм 'Барби' c _id=6acc0b5bfe8a8777aedd768e
+
+==============================================================================
+3. АГРЕГАЦИИ MONGODB (aggregation pipeline)
+==============================================================================
+MongoDB : реальный сервер
+Redis   : in-memory fallback
+          причина: TimeoutError: Timeout connecting to server
+Документов movie: 24
+
+--- Агрегация 1: $unwind genres + $group -> фильмов и средний рейтинг по жанрам
+    _id=драма | count=14 | avg_rating=8.578571428571427 | max_rating=9.3
+    _id=фантастика | count=7 | avg_rating=8.342857142857143 | max_rating=8.8
+    _id=триллер | count=6 | avg_rating=8.5 | max_rating=9.0
+    _id=боевик | count=5 | avg_rating=8.7 | max_rating=9.0
+    _id=криминал | count=4 | avg_rating=8.75 | max_rating=9.2
+    _id=приключения | count=3 | avg_rating=8.5 | max_rating=8.8
+    _id=фэнтези | count=3 | avg_rating=8.1 | max_rating=8.8
+    _id=комедия | count=3 | avg_rating=7.766666666666667 | max_rating=8.8
+    _id=биография | count=1 | avg_rating=8.4 | max_rating=8.4
+    _id=вестерн | count=1 | avg_rating=8.4 | max_rating=8.4
+
+--- Агрегация 2: $match + $group по director.name + $sort + $limit
+    _id=Кристофер Нолан | films=5 | avg_rating=8.68
+    _id=Питер Джексон | films=2 | avg_rating=8.75
+    _id=Фрэнк Дарабонт | films=1 | avg_rating=9.3
+    _id=Фрэнсис Форд Коппола | films=1 | avg_rating=9.2
+    _id=Роберт Земекис | films=1 | avg_rating=8.8
+
+--- Агрегация 3: количество фильмов по статусу
+    _id=showing | count=16 | avg_rating=8.675
+    _id=archived | count=6 | avg_rating=8.266666666666667
+    _id=coming_soon | count=2 | avg_rating=7.6
+
+--- Агрегация 4: топ-5 фильмов по рейтингу ($project)
+    title=Побег из Шоушенка | rating=9.3 | year=1994 | director=Фрэнк Дарабонт
+    title=Крёстный отец | rating=9.2 | year=1972 | director=Фрэнсис Форд Коппола
+    title=Тёмный рыцарь | rating=9.0 | year=2008 | director=Кристофер Нолан
+    title=Криминальное чтиво | rating=8.9 | year=1994 | director=Квентин Тарантино
+    title=Форрест Гамп | rating=8.8 | year=1994 | director=Роберт Земекис
+
+--- Агрегация 5: фильмы по десятилетиям
+    _id=1970.0 | count=1 | avg_rating=9.2
+    _id=1990.0 | count=6 | avg_rating=8.833333333333334
+    _id=2000.0 | count=6 | avg_rating=8.666666666666666
+    _id=2010.0 | count=8 | avg_rating=8.275
+    _id=2020.0 | count=3 | avg_rating=7.733333333333333
+
+--- Агрегация 6: $count -> всего документов
+    total=24
+
+--- Сводная статистика сервиса (через агрегацию):
+    всего фильмов      : 24
+    средний рейтинг    : 8.483333333333333
+    максимальный рейтинг: 9.3
+    по статусам        : [{'_id': 'showing', 'count': 16}, {'_id': 'archived', 'count': 6}, {'_id': 'coming_soon', 'count': 2}]

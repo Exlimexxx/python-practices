@@ -1,0 +1,34 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.2, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Artem\AppData\Local\Programs\Python\Python313\python.exe
+rootdir: C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice15
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.15.1, platformdirs-4.13.0, cov-7.1.0
+collecting ... collected 24 items
+
+tests/test_app.py::test_html_pages_return_200[/] PASSED                  [  4%]
+tests/test_app.py::test_html_pages_return_200[/rooms] PASSED             [  8%]
+tests/test_app.py::test_html_pages_return_200[/rooms/create] PASSED      [ 12%]
+tests/test_app.py::test_html_pages_return_200[/guests] PASSED            [ 16%]
+tests/test_app.py::test_html_pages_return_200[/guests/create] PASSED     [ 20%]
+tests/test_app.py::test_html_pages_return_200[/bookings] PASSED          [ 25%]
+tests/test_app.py::test_html_pages_return_200[/bookings/create] PASSED   [ 29%]
+tests/test_app.py::test_html_404_page PASSED                             [ 33%]
+tests/test_app.py::test_html_crud_room_flow PASSED                       [ 37%]
+tests/test_app.py::test_html_validation_error_is_flashed PASSED          [ 41%]
+tests/test_app.py::test_api_index PASSED                                 [ 45%]
+tests/test_app.py::test_rooms_api_crud PASSED                            [ 50%]
+tests/test_app.py::test_guests_api_crud PASSED                           [ 54%]
+tests/test_app.py::test_api_not_found_and_method_not_allowed PASSED      [ 58%]
+tests/test_app.py::test_booking_price_calculation PASSED                 [ 62%]
+tests/test_app.py::test_booking_overlap_conflict PASSED                  [ 66%]
+tests/test_app.py::test_booking_adjacent_dates_allowed PASSED            [ 70%]
+tests/test_app.py::test_booking_validation_errors PASSED                 [ 75%]
+tests/test_app.py::test_booking_update_keeps_itself PASSED               [ 79%]
+tests/test_app.py::test_availability_endpoint PASSED                     [ 83%]
+tests/test_app.py::test_booking_cancel_releases_dates PASSED             [ 87%]
+tests/test_app.py::test_rooms_search_filter_sort PASSED                  [ 91%]
+tests/test_app.py::test_bookings_filter_by_status_and_dates PASSED       [ 95%]
+tests/test_app.py::test_service_layer_overlap_conflict PASSED            [100%]
+
+============================= 24 passed in 1.03s ==============================

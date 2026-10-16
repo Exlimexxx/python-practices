@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Расписание сеансов{% endblock %}
+{% block content %}
+<h2>Расписание сеансов</h2>
+
+<form class="filters" method="get">
+    <div>
+        <label for="hall">Зал</label>
+        <select class="form-select" name="hall" id="hall">
+            <option value="">Все залы</option>
+            {% for h in halls %}
+                <option value="{{ h.pk }}" {% if current_hall == h.pk|stringformat:"s" %}selected{% endif %}>{{ h.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="status">Статус</label>
+        <select class="form-select" name="status" id="status">
+            <option value="">Все статусы</option>
+            {% for value, label in statuses %}
+                <option value="{{ value }}" {% if current_status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="sort">Сортировка</label>
+        <select class="form-select" name="sort" id="sort">
+            <option value="start_time" {% if current_sort == "start_time" %}selected{% endif %}>Время (раньше)</option>
+            <option value="-start_time" {% if current_sort == "-start_time" %}selected{% endif %}>Время (позже)</option>
+            <option value="price" {% if current_sort == "price" %}selected{% endif %}>Цена (дешевле)</option>
+            <option value="-price" {% if current_sort == "-price" %}selected{% endif %}>Цена (дороже)</option>
+        </select>
+    </div>
+    <div><button class="btn" type="submit">Применить</button></div>
+    <div><a class="btn secondary" href="{% url 'cinema:session_list' %}">Сбросить</a></div>
+</form>
+
+{% if user.is_staff %}
+    <p><a class="btn" href="{% url 'cinema:session_create' %}">Добавить сеанс</a></p>
+{% endif %}
+
+<table>
+    <tr><th>Фильм</th><th>Зал</th><th>Начало</th><th>Окончание</th><th>Цена</th><th>Статус</th><th>Продано</th><th>Действия</th></tr>
+    {% for s in sessions %}
+        <tr>
+            <td><a href="{% url 'cinema:session_detail' s.pk %}">{{ s.movie.title }}</a></td>
+            <td>{{ s.hall.name }}</td>
+            <td>{{ s.start_time|date:"d.m.Y H:i" }}</td>
+            <td>{{ s.end_time|date:"H:i" }}</td>
+            <td>{{ s.price }} ₽</td>
+            <td>{{ s.get_status_display }}</td>
+            <td>{{ s.sold }} / {{ s.hall.capacity }}</td>
+            <td>
+                <a href="{% url 'cinema:session_detail' s.pk %}">Билеты</a>
+                {% if user.is_staff %}
+                    | <a href="{% url 'cinema:session_update' s.pk %}">Изменить</a>
+                    | <a href="{% url 'cinema:session_delete' s.pk %}">Удалить</a>
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="8">Сеансы не найдены.</td></tr>
+    {% endfor %}
+</table>
+
+{% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}<a href="{% querystring page=page_obj.previous_page_number %}">Назад</a>{% endif %}
+        {% for num in paginator.page_range %}
+            {% if num == page_obj.number %}<span><b>{{ num }}</b></span>{% else %}<a href="{% querystring page=num %}">{{ num }}</a>{% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}<a href="{% querystring page=page_obj.next_page_number %}">Вперёд</a>{% endif %}
+        <span>Страница {{ page_obj.number }} из {{ paginator.num_pages }}</span>
+    </div>
+{% endif %}
+{% endblock %}

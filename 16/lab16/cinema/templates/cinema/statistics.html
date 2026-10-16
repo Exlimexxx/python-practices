@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Статистика{% endblock %}
+{% block content %}
+<h2>Статистика кинотеатра</h2>
+<table>
+    <tr><th>Показатель</th><th>Значение</th></tr>
+    <tr><td>Всего фильмов</td><td>{{ movies_total }}</td></tr>
+    <tr><td>Фильмов в прокате</td><td>{{ active_movies }}</td></tr>
+    <tr><td>Жанров</td><td>{{ genres_total }}</td></tr>
+    <tr><td>Залов</td><td>{{ halls_total }}</td></tr>
+    <tr><td>Сеансов</td><td>{{ sessions_total }}</td></tr>
+    <tr><td>Продано билетов</td><td>{{ tickets_total }}</td></tr>
+    <tr><td>Общая выручка</td><td>{{ tickets_revenue }} ₽</td></tr>
+    <tr><td>Средний рейтинг фильмов</td><td>{{ avg_rating|floatformat:2 }}</td></tr>
+    <tr><td>Средняя цена билета</td><td>{{ avg_ticket_price|floatformat:2 }} ₽</td></tr>
+    <tr><td>Жанр-лидер по числу фильмов</td><td>{{ top_genre.name|default:"—" }} ({{ top_genre.total|default:0 }})</td></tr>
+</table>
+
+<h3>Топ-5 фильмов по проданным билетам</h3>
+<table>
+    <tr><th>Фильм</th><th>Билетов</th><th>Рейтинг</th></tr>
+    {% for m in top_movies %}
+        <tr>
+            <td><a href="{% url 'cinema:movie_detail' m.pk %}">{{ m.title }}</a></td>
+            <td>{{ m.total }}</td>
+            <td>{{ m.rating }}</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="3">Нет данных.</td></tr>
+    {% endfor %}
+</table>
+
+<h3>Загрузка залов</h3>
+<table>
+    <tr><th>Зал</th><th>Вместимость</th><th>Сеансов</th></tr>
+    {% for h in hall_load %}
+        <tr><td><a href="{% url 'cinema:hall_detail' h.pk %}">{{ h.name }}</a></td><td>{{ h.capacity }}</td><td>{{ h.total }}</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

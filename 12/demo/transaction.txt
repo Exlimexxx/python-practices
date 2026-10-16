@@ -1,0 +1,262 @@
+﻿SQL> BEGIN (implicit)
+SQL> PRAGMA main.table_info("bookings")
+SQL> [raw sql] ()
+SQL> PRAGMA temp.table_info("bookings")
+SQL> [raw sql] ()
+SQL> PRAGMA main.table_info("guests")
+SQL> [raw sql] ()
+SQL> PRAGMA temp.table_info("guests")
+SQL> [raw sql] ()
+SQL> PRAGMA main.table_info("rooms")
+SQL> [raw sql] ()
+SQL> PRAGMA temp.table_info("rooms")
+SQL> [raw sql] ()
+SQL> COMMIT
+SQL> BEGIN (implicit)
+SQL> PRAGMA main.table_info("bookings")
+SQL> [raw sql] ()
+SQL> PRAGMA temp.table_info("bookings")
+SQL> [raw sql] ()
+SQL> PRAGMA main.table_info("guests")
+SQL> [raw sql] ()
+SQL> PRAGMA temp.table_info("guests")
+SQL> [raw sql] ()
+SQL> PRAGMA main.table_info("rooms")
+SQL> [raw sql] ()
+SQL> PRAGMA temp.table_info("rooms")
+SQL> [raw sql] ()
+SQL> 
+CREATE TABLE guests (
+	id INTEGER NOT NULL, 
+	full_name VARCHAR(120) NOT NULL, 
+	email VARCHAR(120) NOT NULL, 
+	phone VARCHAR(32) NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+SQL> [no key 0.00006s] ()
+SQL> CREATE UNIQUE INDEX ix_guests_email ON guests (email)
+SQL> [no key 0.00009s] ()
+SQL> 
+CREATE TABLE rooms (
+	id INTEGER NOT NULL, 
+	number VARCHAR(16) NOT NULL, 
+	room_type VARCHAR(40) NOT NULL, 
+	capacity INTEGER NOT NULL, 
+	price_per_night NUMERIC(10, 2) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	CONSTRAINT ck_rooms_capacity_positive CHECK (capacity > 0), 
+	CONSTRAINT ck_rooms_price_non_negative CHECK (price_per_night >= 0)
+)
+
+
+SQL> [no key 0.00009s] ()
+SQL> CREATE UNIQUE INDEX ix_rooms_number ON rooms (number)
+SQL> [no key 0.00008s] ()
+SQL> 
+CREATE TABLE bookings (
+	id INTEGER NOT NULL, 
+	guest_id INTEGER NOT NULL, 
+	room_id INTEGER NOT NULL, 
+	check_in DATE NOT NULL, 
+	check_out DATE NOT NULL, 
+	status VARCHAR(20) NOT NULL, 
+	total_price NUMERIC(10, 2) NOT NULL, 
+	PRIMARY KEY (id), 
+	CONSTRAINT ck_bookings_dates_order CHECK (check_out > check_in), 
+	CONSTRAINT ck_bookings_total_non_negative CHECK (total_price >= 0), 
+	FOREIGN KEY(guest_id) REFERENCES guests (id) ON DELETE CASCADE, 
+	FOREIGN KEY(room_id) REFERENCES rooms (id) ON DELETE RESTRICT
+)
+
+
+SQL> [no key 0.00009s] ()
+SQL> CREATE INDEX ix_bookings_room_id ON bookings (room_id)
+SQL> [no key 0.00012s] ()
+SQL> CREATE INDEX ix_bookings_guest_id ON bookings (guest_id)
+SQL> [no key 0.00009s] ()
+SQL> COMMIT
+База данных: sqlite:///demo/transaction_demo.db
+SQL> BEGIN (implicit)
+SQL> INSERT INTO guests (full_name, email, phone) VALUES (?, ?, ?)
+SQL> [generated in 0.00013s] ('Иванов Иван Иванович', 'ivanov@example.com', '+7-900-111-22-33')
+SQL> COMMIT
+SQL> Зарегистрирован гость id=1 email=ivanov@example.com
+SQL> BEGIN (implicit)
+SQL> INSERT INTO rooms (number, room_type, capacity, price_per_night, is_active) VALUES (?, ?, ?, ?, ?)
+SQL> [generated in 0.00016s] ('101', 'Стандарт', 2, 3000.0, 1)
+SQL> COMMIT
+SQL> Добавлен номер id=1 number=101
+Подготовлено: Гость #1: Иванов Иван Иванович (email: ivanov@example.com, тел: +7-900-111-22-33) | Номер 101 (Стандарт), мест: 2, цена: 3000 руб./ночь, активен
+
+==========================================================================
+ТРАНЗАКЦИЯ 1. Успешное бронирование 2025-06-01..2025-06-05 (шаги: проверки → INSERT → COMMIT)
+==========================================================================
+SQL> BEGIN (implicit)
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [generated in 0.00013s] ()
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE bookings.room_id = ? AND bookings.status IN (?) AND bookings.check_in < ? AND bookings.check_out > ? ORDER BY bookings.check_in
+SQL> [generated in 0.00015s] (1, 'active', '2025-06-05', '2025-06-01')
+SQL> INSERT INTO bookings (guest_id, room_id, check_in, check_out, status, total_price) VALUES (?, ?, ?, ?, ?, ?)
+SQL> [generated in 0.00010s] (1, 1, '2025-06-01', '2025-06-05', 'active', 12000.0)
+SQL> COMMIT
+SQL> Создана бронь id=1 гость=1 номер=101 2025-06-01..2025-06-05
+РЕЗУЛЬТАТ: Бронь #1 оформлена: Иванов Иван Иванович → номер 101 (Стандарт), 2025-06-01 → 2025-06-05, 4 ноч., итого 12000 руб.
+SQL> BEGIN (implicit)
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.01131s ago] ()
+Строк в bookings: было 0, стало 1 (транзакция зафиксирована)
+SQL> BEGIN (implicit)
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.01196s ago] ()
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE bookings.id = ?
+SQL> [generated in 0.00009s] (1,)
+Проверка в новой сессии: броней = 1, первая = Бронь #1: гость=1, номер=1, 2025-06-01 → 2025-06-05 (4 ноч.), статус=active, итого=12000.00 руб.
+SQL> ROLLBACK
+
+==========================================================================
+ТРАНЗАКЦИЯ 2. ОТКАТ: пересечение дат (2025-06-03..2025-06-07)
+==========================================================================
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.01328s ago] ()
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE bookings.room_id = ? AND bookings.status IN (?) AND bookings.check_in < ? AND bookings.check_out > ? ORDER BY bookings.check_in
+SQL> [cached since 0.01214s ago] (1, 'active', '2025-06-07', '2025-06-03')
+SQL> ROLLBACK
+SQL> Транзакция бронирования отменена (rollback)
+Перехвачено исключение BookingConflictError: Номер 101 занят на выбранные даты: #1 (2025-06-01—2025-06-05)
+SQL> BEGIN (implicit)
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.01428s ago] ()
+Строк в bookings: было 1, стало 1 — выполнен session.rollback(), запись не создана
+
+==========================================================================
+ТРАНЗАКЦИЯ 3. ОТКАТ: превышение вместимости (мест 2, запрошено 4)
+==========================================================================
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.01452s ago] ()
+SQL> SELECT guests.id, guests.full_name, guests.email, guests.phone 
+FROM guests 
+WHERE guests.id = ?
+SQL> [generated in 0.00007s] (1,)
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE ? = bookings.guest_id
+SQL> [generated in 0.00009s] (1,)
+SQL> SELECT rooms.id, rooms.number, rooms.room_type, rooms.capacity, rooms.price_per_night, rooms.is_active 
+FROM rooms 
+WHERE rooms.id = ?
+SQL> [generated in 0.00013s] (1,)
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE ? = bookings.room_id
+SQL> [generated in 0.00010s] (1,)
+SQL> ROLLBACK
+SQL> Транзакция бронирования отменена (rollback)
+Перехвачено исключение NotEnoughCapacityError: Номер 101 вмещает 2 гост(ей), запрошено 4
+SQL> BEGIN (implicit)
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.01861s ago] ()
+Строк в bookings: было 1, стало 1 — откат выполнен
+
+==========================================================================
+ТРАНЗАКЦИЯ 4. ОТКАТ: некорректные даты (выезд раньше заезда)
+==========================================================================
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.01889s ago] ()
+SQL> SELECT guests.id, guests.full_name, guests.email, guests.phone 
+FROM guests 
+WHERE guests.id = ?
+SQL> [cached since 0.004081s ago] (1,)
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE ? = bookings.guest_id
+SQL> [cached since 0.003412s ago] (1,)
+SQL> SELECT rooms.id, rooms.number, rooms.room_type, rooms.capacity, rooms.price_per_night, rooms.is_active 
+FROM rooms 
+WHERE rooms.id = ?
+SQL> [cached since 0.002882s ago] (1,)
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE ? = bookings.room_id
+SQL> [cached since 0.002471s ago] (1,)
+SQL> ROLLBACK
+SQL> Транзакция бронирования отменена (rollback)
+Перехвачено исключение ValidationError: Некорректные даты: выезд 2025-06-10 не позже заезда 2025-06-12
+SQL> BEGIN (implicit)
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.0208s ago] ()
+Строк в bookings: было 1, стало 1 — откат выполнен
+
+==========================================================================
+ТРАНЗАКЦИЯ 5. ОТКАТ: несуществующий гость (guest_id=999, нарушение FK)
+==========================================================================
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.02114s ago] ()
+SQL> SELECT rooms.id, rooms.number, rooms.room_type, rooms.capacity, rooms.price_per_night, rooms.is_active 
+FROM rooms 
+WHERE rooms.id = ?
+SQL> [cached since 0.004392s ago] (1,)
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE ? = bookings.room_id
+SQL> [cached since 0.003879s ago] (1,)
+SQL> SELECT guests.id, guests.full_name, guests.email, guests.phone 
+FROM guests 
+WHERE guests.id = ?
+SQL> [generated in 0.00008s] (999,)
+SQL> ROLLBACK
+SQL> Транзакция бронирования отменена (rollback)
+Перехвачено исключение NotFoundError: Гость с id=999 не найден
+SQL> BEGIN (implicit)
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.02296s ago] ()
+Строк в bookings: было 1, стало 1 — откат выполнен
+
+==========================================================================
+ИТОГ
+==========================================================================
+Все брони в базе:
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings
+SQL> [generated in 0.00006s] ()
+SQL> SELECT rooms.id, rooms.number, rooms.room_type, rooms.capacity, rooms.price_per_night, rooms.is_active 
+FROM rooms 
+WHERE rooms.id = ?
+SQL> [cached since 0.007085s ago] (1,)
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE ? = bookings.room_id
+SQL> [cached since 0.006621s ago] (1,)
+SQL> SELECT guests.id, guests.full_name, guests.email, guests.phone 
+FROM guests 
+WHERE guests.id = ?
+SQL> [cached since 0.009614s ago] (1,)
+SQL> SELECT bookings.id, bookings.guest_id, bookings.room_id, bookings.check_in, bookings.check_out, bookings.status, bookings.total_price 
+FROM bookings 
+WHERE ? = bookings.guest_id
+SQL> [cached since 0.008924s ago] (1,)
+   Бронь #1: гость=1, номер=1, 2025-06-01 → 2025-06-05 (4 ноч.), статус=active, итого=12000.00 руб. | отель: Номер 101 (Стандарт), мест: 2, цена: 3000.00 руб./ночь, активен | гость: Иванов Иван Иванович
+SQL> SELECT count(*) AS count_1 
+FROM bookings
+SQL> [cached since 0.02534s ago] ()
+Сессия после серии откатов работоспособна, всего броней: 1
+SQL> ROLLBACK

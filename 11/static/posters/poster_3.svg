@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#40210f"/>
+      <stop offset="100%" stop-color="#150a04"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="450" fill="url(#bg3)"/>
+  <rect x="16" y="16" width="268" height="418" fill="none" stroke="#ff9f43" stroke-width="2" opacity="0.8"/>
+  <circle cx="150" cy="150" r="62" fill="none" stroke="#ff9f43" stroke-width="3" opacity="0.9"/>
+  <polygon points="132,118 132,182 186,150" fill="#ff9f43"/>
+  <text x="150" y="268" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
+        font-size="22" font-weight="bold" fill="#ffffff">Тёмный рыцарь</text>
+  <text x="150" y="300" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
+        font-size="14" fill="#ff9f43">боевик • триллер</text>
+  <text x="150" y="404" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif"
+        font-size="12" fill="#ffffff" opacity="0.75">Кинотеатр • CDN poster 3</text>
+</svg>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }}{% endblock %}
+{% block content %}
+<h2>{{ movie.title }} ({{ movie.year }})</h2>
+
+<p><b>Жанры:</b> {{ movie.genres_text }}</p>
+<p><b>Рейтинг:</b> {{ movie.rating }} / 10</p>
+<p><b>Продолжительность сеанса:</b> {{ movie.duration_minutes }} мин</p>
+<p><b>В прокате:</b> {% if movie.is_active %}да{% else %}нет{% endif %}</p>
+<p><b>Описание:</b> {{ movie.description|default:"—" }}</p>
+{% if movie.poster %}
+    <p><img src="{{ movie.poster.url }}" alt="Афиша" style="max-height: 260px;"></p>
+{% else %}
+    <p><i>Афиша не загружена.</i></p>
+{% endif %}
+
+<h3>Сеансы фильма</h3>
+<table>
+    <tr><th>Дата и время</th><th>Зал</th><th>Цена</th><th>Статус</th><th>Продано</th><th></th></tr>
+    {% for s in sessions %}
+        <tr>
+            <td>{{ s.start_time|date:"d.m.Y H:i" }} — {{ s.end_time|date:"H:i" }}</td>
+            <td>{{ s.hall.name }}</td>
+            <td>{{ s.price }} ₽</td>
+            <td>{{ s.get_status_display }}</td>
+            <td>{{ s.sold }} из {{ s.hall.capacity }}</td>
+            <td><a href="{% url 'cinema:session_detail' s.pk %}">Билеты</a></td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="6">Сеансы не назначены.</td></tr>
+    {% endfor %}
+</table>
+
+<h3>Похожие фильмы</h3>
+<ul>
+    {% for m in similar %}
+        <li><a href="{% url 'cinema:movie_detail' m.pk %}">{{ m.title }}</a> — {{ m.rating }}</li>
+    {% empty %}
+        <li>Нет похожих фильмов.</li>
+    {% endfor %}
+</ul>
+
+<p>
+    <a class="btn" href="{% url 'cinema:movie_list' %}">К афише</a>
+    {% if user.is_staff %}
+        <a class="btn secondary" href="{% url 'cinema:movie_update' movie.pk %}">Изменить</a>
+        <a class="btn danger" href="{% url 'cinema:movie_delete' movie.pk %}">Удалить</a>
+    {% endif %}
+</p>
+{% endblock %}

@@ -1,0 +1,46 @@
+"""Пользовательские исключения приложения."""
+from __future__ import annotations
+
+from app.exceptions.domain import (
+    AppError,
+    AuthenticationError,
+    BookingNotFoundError,
+    BookingNotPaidError,
+    BookingOverlapError,
+    BookingStatusError,
+    BusinessRuleError,
+    EmailAlreadyUsedError,
+    EntityNotFoundError,
+    ExternalServiceError,
+    PaymentAmountError,
+    PaymentNotFoundError,
+    PermissionDeniedError,
+    RoomHasBookingsError,
+    RoomNotAvailableError,
+    RoomNotFoundError,
+    RoomNumberAlreadyUsedError,
+    UserNotFoundError,
+    ValidationFailure,
+)
+
+__all__ = [
+    "AppError",
+    "AuthenticationError",
+    "BookingNotFoundError",
+    "BookingNotPaidError",
+    "BookingOverlapError",
+    "BookingStatusError",
+    "BusinessRuleError",
+    "EmailAlreadyUsedError",
+    "EntityNotFoundError",
+    "ExternalServiceError",
+    "PaymentAmountError",
+    "PaymentNotFoundError",
+    "PermissionDeniedError",
+    "RoomHasBookingsError",
+    "RoomNotAvailableError",
+    "RoomNotFoundError",
+    "RoomNumberAlreadyUsedError",
+    "UserNotFoundError",
+    "ValidationFailure",
+]

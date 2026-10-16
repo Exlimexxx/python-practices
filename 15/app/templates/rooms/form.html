@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% set is_active_checked = (form.get('is_active') in ['1', 'true', 'on', 'True', 'да'] or form.get('is_active') == true) if form else true %}
+{% block title %}{{ 'Редактирование номера' if room else 'Новый номер' }}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs">
+    <a href="{{ url_for('web.room_list') }}">Номера</a> /
+    {{ 'редактирование № ' ~ room.number if room else 'создание' }}
+</nav>
+<h1>{{ 'Редактирование номера № ' ~ room.number if room else 'Новый номер' }}</h1>
+
+<form class="entity-form" method="post">
+    <label>Номер *
+        <input type="text" name="number" maxlength="10" required
+               value="{{ form.get('number') or (room.number if room else '') }}">
+    </label>
+    <label>Тип номера *
+        <select name="room_type" required>
+            {% for t in room_types %}
+                {% set current = form.get('room_type') or (room.room_type if room else '') %}
+                <option value="{{ t }}" {{ 'selected' if current == t else '' }}>{{ t }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Вместимость, чел. *
+        <input type="number" name="capacity" min="1" max="20" required
+               value="{{ form.get('capacity') or (room.capacity if room else 2) }}">
+    </label>
+    <label>Цена за ночь, ₽ *
+        <input type="number" name="price_per_night" min="0" step="0.01" required
+               value="{{ form.get('price_per_night') or (room.price_per_night if room else 0) }}">
+    </label>
+    <label>Этаж *
+        <input type="number" name="floor" min="1" max="100" required
+               value="{{ form.get('floor') or (room.floor if room else 1) }}">
+    </label>
+    <label class="checkbox">
+        <input type="checkbox" name="is_active" value="1" {{ 'checked' if is_active_checked else '' }}>
+        Номер доступен для бронирования
+    </label>
+    <label>Описание
+        <textarea name="description" rows="4" maxlength="2000">{{ form.get('description') or (room.description if room else '') }}</textarea>
+    </label>
+    <div class="form-actions">
+        <button class="btn btn-primary" type="submit">{{ 'Сохранить' if room else 'Создать' }}</button>
+        <a class="btn btn-link" href="{{ url_for('web.room_list') }}">Отмена</a>
+    </div>
+</form>
+{% endblock %}

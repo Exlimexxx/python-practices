@@ -1,0 +1,96 @@
+INFO     app.repository     | Индексы созданы: ['genres_rating', 'director_name', 'year_desc']
+INFO     app.repository     | Создан фильм 'Побег из Шоушенка' c _id=6acc0b7e3ec6ac70b06caedf
+INFO     app.repository     | Создан фильм 'Крёстный отец' c _id=6acc0b7e3ec6ac70b06caee0
+INFO     app.repository     | Создан фильм 'Тёмный рыцарь' c _id=6acc0b7e3ec6ac70b06caee1
+INFO     app.repository     | Создан фильм 'Криминальное чтиво' c _id=6acc0b7e3ec6ac70b06caee2
+INFO     app.repository     | Создан фильм 'Форрест Гамп' c _id=6acc0b7e3ec6ac70b06caee3
+INFO     app.repository     | Создан фильм 'Начало' c _id=6acc0b7e3ec6ac70b06caee4
+INFO     app.repository     | Создан фильм 'Матрица' c _id=6acc0b7e3ec6ac70b06caee5
+INFO     app.repository     | Создан фильм 'Интерстеллар' c _id=6acc0b7e3ec6ac70b06caee6
+INFO     app.repository     | Создан фильм 'Бойцовский клуб' c _id=6acc0b7e3ec6ac70b06caee7
+INFO     app.repository     | Создан фильм 'Леон' c _id=6acc0b7e3ec6ac70b06caee8
+INFO     app.repository     | Создан фильм 'Гладиатор' c _id=6acc0b7e3ec6ac70b06caee9
+INFO     app.repository     | Создан фильм 'Отступники' c _id=6acc0b7e3ec6ac70b06caeea
+INFO     app.repository     | Создан фильм 'Джанго освобождённый' c _id=6acc0b7e3ec6ac70b06caeeb
+INFO     app.repository     | Создан фильм 'Престиж' c _id=6acc0b7e3ec6ac70b06caeec
+INFO     app.repository     | Создан фильм 'Властелин колец: Братство Кольца' c _id=6acc0b7e3ec6ac70b06caeed
+INFO     app.repository     | Создан фильм 'Властелин колец: Две крепости' c _id=6acc0b7e3ec6ac70b06caeee
+INFO     app.repository     | Создан фильм 'Паразиты' c _id=6acc0b7e3ec6ac70b06caeef
+INFO     app.repository     | Создан фильм 'Джокер' c _id=6acc0b7e3ec6ac70b06caef0
+INFO     app.repository     | Создан фильм 'Однажды в Голливуде' c _id=6acc0b7e3ec6ac70b06caef1
+INFO     app.repository     | Создан фильм 'Гравитация' c _id=6acc0b7e3ec6ac70b06caef2
+INFO     app.repository     | Создан фильм 'Дюна' c _id=6acc0b7e3ec6ac70b06caef3
+INFO     app.repository     | Создан фильм 'Бегущий по лезвию 2049' c _id=6acc0b7e3ec6ac70b06caef4
+INFO     app.repository     | Создан фильм 'Оппенгеймер' c _id=6acc0b7e3ec6ac70b06caef5
+INFO     app.repository     | Создан фильм 'Барби' c _id=6acc0b7e3ec6ac70b06caef6
+
+==============================================================================
+5. CACHE-ASIDE: ПРОМАХ, ПОПАДАНИЕ, TTL, ИНВАЛИДАЦИЯ
+==============================================================================
+MongoDB : реальный сервер
+Redis   : in-memory fallback
+          причина: TimeoutError: Timeout connecting to server
+Документов movie: 24
+Тестовый фильм _id = 6acc0b7e3ec6ac70b06caedf
+INFO     app.service        | Кэш очищен, удалено ключей: 0
+
+==============================================================================
+5.1. Первый запрос: промах кэша (CACHE MISS) -> MongoDB -> Redis
+==============================================================================
+INFO     app.service        | CACHE MISS cinema:movie:6acc0b7e3ec6ac70b06caedf -> обращение к MongoDB
+INFO     app.service        | Данные помещены в Redis: cinema:movie:6acc0b7e3ec6ac70b06caedf (TTL=60 c)
+Получено из MongoDB: 'Побег из Шоушенка' (1994), реж. Фрэнк Дарабонт, драма, 142 мин, рейтинг 9.3, статус showing
+Состояние ключа: cinema:movie:6acc0b7e3ec6ac70b06caedf -> value=есть, ttl=60
+
+==============================================================================
+5.2. Второй запрос: попадание в кэш (CACHE HIT), MongoDB не вызывается
+==============================================================================
+INFO     app.service        | CACHE HIT  cinema:movie:6acc0b7e3ec6ac70b06caedf (TTL=60 c)
+Получено из Redis: 'Побег из Шоушенка' (1994), реж. Фрэнк Дарабонт, драма, 142 мин, рейтинг 9.3, статус showing
+Состояние ключа: cinema:movie:6acc0b7e3ec6ac70b06caedf -> value=есть, ttl=60
+Статистика обращений: {'hits': 1, 'misses': 1}
+
+==============================================================================
+5.3. TTL: автоматическое истечение ключа
+==============================================================================
+SET cinema:demo:ttl EX 2 -> значение='живёт 2 секунды', ttl=2
+... ожидание 3 секунды ...
+GET cinema:demo:ttl -> None, ttl=-2
+Ключ movie всё ещё жив (TTL 60 c): cinema:movie:6acc0b7e3ec6ac70b06caedf -> value=есть, ttl=57
+
+==============================================================================
+5.4. Инвалидация кэша при изменении объекта (update -> DEL)
+==============================================================================
+Рейтинг до изменения: 9.3
+INFO     app.repository     | update _id=6acc0b7e3ec6ac70b06caedf изменений=True
+INFO     app.service        | Инвалидация кэша movie:6acc0b7e3ec6ac70b06caedf -> удалено ключей: 1
+Рейтинг после изменения: 9.9
+Состояние ключа после update (должно быть 'нет'): cinema:movie:6acc0b7e3ec6ac70b06caedf -> value=нет, ttl=-2
+
+==============================================================================
+5.5. Следующий запрос снова идёт в MongoDB (CACHE MISS) и обновляет кэш
+==============================================================================
+INFO     app.service        | CACHE MISS cinema:movie:6acc0b7e3ec6ac70b06caedf -> обращение к MongoDB
+INFO     app.service        | Данные помещены в Redis: cinema:movie:6acc0b7e3ec6ac70b06caedf (TTL=60 c)
+Получено: 'Побег из Шоушенка' (1994), реж. Фрэнк Дарабонт, драма, 142 мин, рейтинг 9.9, статус showing
+Состояние ключа: cinema:movie:6acc0b7e3ec6ac70b06caedf -> value=есть, ttl=60
+Статистика обращений: {'hits': 1, 'misses': 2}
+
+==============================================================================
+5.6. Инвалидация при удалении (delete -> DEL + ZREM)
+==============================================================================
+INFO     app.repository     | delete _id=6acc0b7e3ec6ac70b06caedf удалено=True
+INFO     app.service        | Инвалидация кэша movie:6acc0b7e3ec6ac70b06caedf -> удалено ключей: 1
+Документ удалён. Состояние ключа: cinema:movie:6acc0b7e3ec6ac70b06caedf -> value=нет, ttl=-2
+INFO     app.service        | CACHE MISS cinema:movie:6acc0b7e3ec6ac70b06caedf -> обращение к MongoDB
+Ожидаемая ошибка: NotFoundError: Фильм с _id=ObjectId('6acc0b7e3ec6ac70b06caedf') не найден
+
+==============================================================================
+5.7. Состояние кэша (ключи, типы, TTL)
+==============================================================================
+namespace   : cinema
+ключей всего: 3
+hits/misses : 1 / 3
+  - {'key': 'cinema:popular', 'type': 'zset', 'ttl': -1}
+  - {'key': 'cinema:rating', 'type': 'zset', 'ttl': -1}
+  - {'key': 'cinema:recent', 'type': 'list', 'ttl': -1}

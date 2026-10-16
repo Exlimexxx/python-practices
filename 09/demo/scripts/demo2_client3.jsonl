@@ -1,0 +1,7 @@
+# Клиент 3: работает со студентом id=3, создаёт нового и удаляет старого
+{"command": "get", "data": {"id": 3}}
+{"command": "average_grade", "data": {"id": 3}}
+{"command": "sleep", "data": {"seconds": 1}}
+{"command": "create", "data": {"name": "Новый Студент Клиента Три", "group": "ИУ7-43Б", "grades": [5, 5, 5], "email": "new3@bmstu.ru", "year": 3}}
+{"command": "delete", "data": {"id": 3}}
+{"command": "status", "data": {}}

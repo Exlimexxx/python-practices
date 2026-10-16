@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Сеанс {{ session.pk }}{% endblock %}
+{% block content %}
+<h2>{{ session.movie.title }}</h2>
+<p><b>Зал:</b> {{ session.hall.name }} ({{ session.hall.rows }} рядов по {{ session.hall.seats_per_row }} мест, всего {{ session.hall.capacity }})</p>
+<p><b>Начало:</b> {{ session.start_time|date:"d.m.Y H:i" }}</p>
+<p><b>Окончание:</b> {{ session.end_time|date:"d.m.Y H:i" }}</p>
+<p><b>Цена билета:</b> {{ session.price }} ₽</p>
+<p><b>Статус:</b> {{ session.get_status_display }}</p>
+<p><b>Продано билетов:</b> {{ session.sold_tickets }} из {{ session.hall.capacity }}</p>
+<p><b>Выручка сеанса:</b> {{ revenue }} ₽</p>
+
+<h3>Проданные билеты</h3>
+<table>
+    <tr><th>#</th><th>Ряд</th><th>Место</th><th>Покупатель</th><th>Цена</th><th>Оплачен</th><th>Продан</th></tr>
+    {% for t in tickets %}
+        <tr>
+            <td>{{ t.pk }}</td>
+            <td>{{ t.row }}</td>
+            <td>{{ t.seat }}</td>
+            <td>{{ t.buyer_name }}</td>
+            <td>{{ t.price }} ₽</td>
+            <td>{% if t.is_paid %}да{% else %}нет{% endif %}</td>
+            <td>{{ t.purchased_at|date:"d.m.Y H:i" }}</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="7">Билеты ещё не проданы.</td></tr>
+    {% endfor %}
+</table>
+
+<h3>Продать билет</h3>
+{% if user.is_authenticated %}
+    <form method="post" action="{% url 'cinema:buy_ticket' session.pk %}">
+        {% csrf_token %}
+        {{ ticket_form.as_p }}
+        <button class="btn" type="submit">Продать билет</button>
+    </form>
+{% else %}
+    <p><a href="{% url 'login' %}?next={{ request.path }}">Войдите</a>, чтобы продать билет.</p>
+{% endif %}
+
+<p>
+    <a class="btn" href="{% url 'cinema:session_list' %}">К расписанию</a>
+    {% if user.is_staff %}
+        <a class="btn secondary" href="{% url 'cinema:session_update' session.pk %}">Изменить</a>
+        <a class="btn danger" href="{% url 'cinema:session_delete' session.pk %}">Удалить</a>
+    {% endif %}
+</p>
+{% endblock %}

@@ -1,0 +1,6 @@
+# Клиент 2: работает со студентом id=2 и создаёт нового
+{"command": "get", "data": {"id": 2}}
+{"command": "average_grade", "data": {"id": 2}}
+{"command": "sleep", "data": {"seconds": 1}}
+{"command": "create", "data": {"name": "Новый Студент Клиента Два", "group": "ИУ7-42Б", "grades": [4, 4, 5], "email": "new2@bmstu.ru", "year": 3}}
+{"command": "groups", "data": {}}

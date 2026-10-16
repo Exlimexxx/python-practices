@@ -1,0 +1,25 @@
+# Сценарий пакетного клиента (каждая строка -- отдельный JSON-запрос).
+# Строки, начинающиеся с '#', -- комментарии; '!raw ' отправляет строку как есть.
+{"command": "ping", "data": {}}
+{"command": "status", "data": {}}
+{"command": "list", "data": {}}
+{"command": "get", "data": {"id": 1}}
+{"command": "average_grade", "data": {"id": 1}}
+{"command": "average_grade", "data": {"id": 2}}
+{"command": "average_grade", "data": {"id": 3}}
+{"command": "create", "data": {"name": "Кузнецов Артём Игоревич", "group": "ИУ7-33Б", "grades": [5, 4, 5], "email": "kuznetsov@bmstu.ru", "year": 3}}
+{"command": "get", "data": {"id": 4}}
+{"command": "update", "data": {"id": 4, "grades": [5, 5, 5], "group": "ИУ7-34Б"}}
+{"command": "average_grade", "data": {"id": 4}}
+{"command": "groups", "data": {}}
+{"command": "list", "data": {"group": "ИУ7-31Б", "sort_by": "average"}}
+{"command": "delete", "data": {"id": 4}}
+{"command": "get", "data": {"id": 4}}
+{"command": "teleport", "data": {}}
+!raw {"command": "create", "data": {"name": "Без группы"}}
+!raw {"data": {"id": 1}}
+!raw {это совсем не корректный JSON
+{"command": "create", "data": {"name": "Плохие Оценки Студент", "group": "ИУ7-31Б", "grades": [9, 10]}}
+{"command": "sleep", "data": {"seconds": 3}}
+{"command": "ping", "data": {"echo": "клиент переподключился после тайм-аута"}}
+{"command": "status", "data": {}}

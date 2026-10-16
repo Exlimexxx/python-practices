@@ -1,0 +1,192 @@
+==============================================================================
+ДЕМОНСТРАЦИЯ 2: ОДНОВРЕМЕННАЯ РАБОТА ТРЁХ КЛИЕНТОВ (этап 11)
+Дата и время запуска: 2026-10-11 15:08:59
+Сервер: 127.0.0.1:5509 (TCP), потоковый пул ThreadPoolExecutor
+Три процесса client.py запускаются практически одновременно
+(subprocess.Popen + stdin из файла + перехват stdout/stderr).
+==============================================================================
+Сервер готов принимать соединения: да
+
+------------------------------------------------------------------------------
+1. ХРОНОМЕТРАЖ (все три клиента работали параллельно)
+------------------------------------------------------------------------------
+Клиент      старт, с  финиш, с   длительность, с   код
+Клиент 1        0.00      1.07              1.07     0
+Клиент 2        0.00      1.07              1.07     0
+Клиент 3        0.00      1.07              1.07     0
+Суммарное время работы клиентов: 3.20 с; фактическое время демонстрации: 1.07 с.
+Фактическое время существенно меньше суммы длительностей -- клиенты обслуживались сервером одновременно (команда sleep 1 с выполнялась параллельно).
+
+------------------------------------------------------------------------------
+2. ВЫВОД КЛИЕНТ 1
+------------------------------------------------------------------------------
+=== КЛИЕНТ УНИВЕРСИТЕТА === сервер 127.0.0.1:5509, тайм-аут 10.0 с
+>>> ЗАПРОС: {"command": "get", "data": {"id": 1}}
+<<< ОТВЕТ (ok): {"student": {"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "email": "ivanov@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.75}}
+>>> ЗАПРОС: {"command": "average_grade", "data": {"id": 1}}
+<<< ОТВЕТ (ok): {"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "grades_count": 4, "average_grade": 4.75, "min_grade": 4, "max_grade": 5}
+>>> ЗАПРОС: {"command": "sleep", "data": {"seconds": 1}}
+<<< ОТВЕТ (ok): {"slept_seconds": 1.0, "note": "если клиент не дождался ответа -- сработал тайм-аут"}
+>>> ЗАПРОС: {"command": "update", "data": {"id": 1, "email": "client1-new@bmstu.ru"}}
+<<< ОТВЕТ (ok): {"student": {"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "email": "client1-new@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.75}, "message": "Данные студента обновлены"}
+>>> ЗАПРОС: {"command": "list", "data": {"name_contains": "Иванов"}}
+<<< ОТВЕТ (ok): {"count": 1, "students": [{"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "email": "client1-new@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.75}]}
+--- журнал клиента (stderr, модуль logging) ---
+2026-10-11 15:09:00 INFO    [MainThread] Подключение к серверу 127.0.0.1:5509 установлено
+2026-10-11 15:09:00 INFO    [MainThread] Запрос к серверу: {"command": "get", "data": {"id": 1}}
+2026-10-11 15:09:00 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"email":"ivanov@bmstu.ru","year":2,"status":"active","average_grade":4.75}}}
+2026-10-11 15:09:00 INFO    [MainThread] Запрос к серверу: {"command": "average_grade", "data": {"id": 1}}
+2026-10-11 15:09:00 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"grades_count":4,"average_grade":4.75,"min_grade":4,"max_grade":5}}
+2026-10-11 15:09:00 INFO    [MainThread] Запрос к серверу: {"command": "sleep", "data": {"seconds": 1}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"slept_seconds":1.0,"note":"если клиент не дождался ответа -- сработал тайм-аут"}}
+2026-10-11 15:09:01 INFO    [MainThread] Запрос к серверу: {"command": "update", "data": {"id": 1, "email": "client1-new@bmstu.ru"}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"email":"client1-new@bmstu.ru","year":2,"status":"active","average_grade":4.75},"message":"Данные студента обновлены"}}
+2026-10-11 15:09:01 INFO    [MainThread] Запрос к серверу: {"command": "list", "data": {"name_contains": "Иванов"}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"count":1,"students":[{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"email":"client1-new@bmstu.ru","year":2,"status":"active","average_grade":4.75}]}}
+2026-10-11 15:09:01 INFO    [MainThread] Соединение с сервером закрыто
+
+------------------------------------------------------------------------------
+2. ВЫВОД КЛИЕНТ 2
+------------------------------------------------------------------------------
+=== КЛИЕНТ УНИВЕРСИТЕТА === сервер 127.0.0.1:5509, тайм-аут 10.0 с
+>>> ЗАПРОС: {"command": "get", "data": {"id": 2}}
+<<< ОТВЕТ (ok): {"student": {"id": 2, "name": "Петрова Анна Сергеевна", "group": "ИУ7-31Б", "grades": [4, 4, 3, 5], "email": "petrova@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.0}}
+>>> ЗАПРОС: {"command": "average_grade", "data": {"id": 2}}
+<<< ОТВЕТ (ok): {"id": 2, "name": "Петрова Анна Сергеевна", "group": "ИУ7-31Б", "grades": [4, 4, 3, 5], "grades_count": 4, "average_grade": 4.0, "min_grade": 3, "max_grade": 5}
+>>> ЗАПРОС: {"command": "sleep", "data": {"seconds": 1}}
+<<< ОТВЕТ (ok): {"slept_seconds": 1.0, "note": "если клиент не дождался ответа -- сработал тайм-аут"}
+>>> ЗАПРОС: {"command": "create", "data": {"name": "Новый Студент Клиента Два", "group": "ИУ7-42Б", "grades": [4, 4, 5], "email": "new2@bmstu.ru", "year": 3}}
+<<< ОТВЕТ (ok): {"student": {"id": 4, "name": "Новый Студент Клиента Два", "group": "ИУ7-42Б", "grades": [4, 4, 5], "email": "new2@bmstu.ru", "year": 3, "status": "active", "average_grade": 4.33}, "message": "Студент создан"}
+>>> ЗАПРОС: {"command": "groups", "data": {}}
+<<< ОТВЕТ (ok): {"groups_count": 3, "groups": [{"group": "ИУ7-31Б", "students_count": 2, "average_grade": 4.38, "best_student": "Иванов Иван Иванович"}, {"group": "ИУ7-32Б", "students_count": 1, "average_grade": 3.33, "best_student": "Сидоров Пётр Алексеевич"}, {"group": "ИУ7-42Б", "students_count": 1, "average_grade": 4.33, "best_student": "Новый Студент Клиента Два"}]}
+--- журнал клиента (stderr, модуль logging) ---
+2026-10-11 15:09:00 INFO    [MainThread] Подключение к серверу 127.0.0.1:5509 установлено
+2026-10-11 15:09:00 INFO    [MainThread] Запрос к серверу: {"command": "get", "data": {"id": 2}}
+2026-10-11 15:09:00 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":2,"name":"Петрова Анна Сергеевна","group":"ИУ7-31Б","grades":[4,4,3,5],"email":"petrova@bmstu.ru","year":2,"status":"active","average_grade":4.0}}}
+2026-10-11 15:09:00 INFO    [MainThread] Запрос к серверу: {"command": "average_grade", "data": {"id": 2}}
+2026-10-11 15:09:00 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"id":2,"name":"Петрова Анна Сергеевна","group":"ИУ7-31Б","grades":[4,4,3,5],"grades_count":4,"average_grade":4.0,"min_grade":3,"max_grade":5}}
+2026-10-11 15:09:00 INFO    [MainThread] Запрос к серверу: {"command": "sleep", "data": {"seconds": 1}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"slept_seconds":1.0,"note":"если клиент не дождался ответа -- сработал тайм-аут"}}
+2026-10-11 15:09:01 INFO    [MainThread] Запрос к серверу: {"command": "create", "data": {"name": "Новый Студент Клиента Два", "group": "ИУ7-42Б", "grades": [4, 4, 5], "email": "new2@bmstu.ru", "year": 3}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":4,"name":"Новый Студент Клиента Два","group":"ИУ7-42Б","grades":[4,4,5],"email":"new2@bmstu.ru","year":3,"status":"active","average_grade":4.33},"message":"Студент создан"}}
+2026-10-11 15:09:01 INFO    [MainThread] Запрос к серверу: {"command": "groups", "data": {}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"groups_count":3,"groups":[{"group":"ИУ7-31Б","students_count":2,"average_grade":4.38,"best_student":"Иванов Иван Иванович"},{"group":"ИУ7-32Б","students_count":1,"average_grade":3.33,"best_student":"Сидоров Пётр Алексеевич"},{"group":"ИУ7-42Б","students_count":1,"average_grade":4.33,"best_student":"Новый Студент Клиента Два"}]}}
+2026-10-11 15:09:01 INFO    [MainThread] Соединение с сервером закрыто
+
+------------------------------------------------------------------------------
+2. ВЫВОД КЛИЕНТ 3
+------------------------------------------------------------------------------
+=== КЛИЕНТ УНИВЕРСИТЕТА === сервер 127.0.0.1:5509, тайм-аут 10.0 с
+>>> ЗАПРОС: {"command": "get", "data": {"id": 3}}
+<<< ОТВЕТ (ok): {"student": {"id": 3, "name": "Сидоров Пётр Алексеевич", "group": "ИУ7-32Б", "grades": [3, 4, 3], "email": "sidorov@bmstu.ru", "year": 2, "status": "academic_leave", "average_grade": 3.33}}
+>>> ЗАПРОС: {"command": "average_grade", "data": {"id": 3}}
+<<< ОТВЕТ (ok): {"id": 3, "name": "Сидоров Пётр Алексеевич", "group": "ИУ7-32Б", "grades": [3, 4, 3], "grades_count": 3, "average_grade": 3.33, "min_grade": 3, "max_grade": 4}
+>>> ЗАПРОС: {"command": "sleep", "data": {"seconds": 1}}
+<<< ОТВЕТ (ok): {"slept_seconds": 1.0, "note": "если клиент не дождался ответа -- сработал тайм-аут"}
+>>> ЗАПРОС: {"command": "create", "data": {"name": "Новый Студент Клиента Три", "group": "ИУ7-43Б", "grades": [5, 5, 5], "email": "new3@bmstu.ru", "year": 3}}
+<<< ОТВЕТ (ok): {"student": {"id": 5, "name": "Новый Студент Клиента Три", "group": "ИУ7-43Б", "grades": [5, 5, 5], "email": "new3@bmstu.ru", "year": 3, "status": "active", "average_grade": 5.0}, "message": "Студент создан"}
+>>> ЗАПРОС: {"command": "delete", "data": {"id": 3}}
+<<< ОТВЕТ (ok): {"student": {"id": 3, "name": "Сидоров Пётр Алексеевич", "group": "ИУ7-32Б", "grades": [3, 4, 3], "email": "sidorov@bmstu.ru", "year": 2, "status": "academic_leave", "average_grade": 3.33}, "message": "Студент удалён"}
+>>> ЗАПРОС: {"command": "status", "data": {}}
+<<< ОТВЕТ (ok): {"server": "running", "transport": "TCP", "protocol": "newline-delimited JSON", "students_count": 4, "groups": ["ИУ7-31Б", "ИУ7-42Б", "ИУ7-43Б"], "average_grade": 4.52, "uptime_seconds": 1.73, "completed_commands": 12, "active_connections": 1, "total_connections": 5}
+--- журнал клиента (stderr, модуль logging) ---
+2026-10-11 15:09:00 INFO    [MainThread] Подключение к серверу 127.0.0.1:5509 установлено
+2026-10-11 15:09:00 INFO    [MainThread] Запрос к серверу: {"command": "get", "data": {"id": 3}}
+2026-10-11 15:09:00 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":3,"name":"Сидоров Пётр Алексеевич","group":"ИУ7-32Б","grades":[3,4,3],"email":"sidorov@bmstu.ru","year":2,"status":"academic_leave","average_grade":3.33}}}
+2026-10-11 15:09:00 INFO    [MainThread] Запрос к серверу: {"command": "average_grade", "data": {"id": 3}}
+2026-10-11 15:09:00 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"id":3,"name":"Сидоров Пётр Алексеевич","group":"ИУ7-32Б","grades":[3,4,3],"grades_count":3,"average_grade":3.33,"min_grade":3,"max_grade":4}}
+2026-10-11 15:09:00 INFO    [MainThread] Запрос к серверу: {"command": "sleep", "data": {"seconds": 1}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"slept_seconds":1.0,"note":"если клиент не дождался ответа -- сработал тайм-аут"}}
+2026-10-11 15:09:01 INFO    [MainThread] Запрос к серверу: {"command": "create", "data": {"name": "Новый Студент Клиента Три", "group": "ИУ7-43Б", "grades": [5, 5, 5], "email": "new3@bmstu.ru", "year": 3}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":5,"name":"Новый Студент Клиента Три","group":"ИУ7-43Б","grades":[5,5,5],"email":"new3@bmstu.ru","year":3,"status":"active","average_grade":5.0},"message":"Студент создан"}}
+2026-10-11 15:09:01 INFO    [MainThread] Запрос к серверу: {"command": "delete", "data": {"id": 3}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":3,"name":"Сидоров Пётр Алексеевич","group":"ИУ7-32Б","grades":[3,4,3],"email":"sidorov@bmstu.ru","year":2,"status":"academic_leave","average_grade":3.33},"message":"Студент удалён"}}
+2026-10-11 15:09:01 INFO    [MainThread] Запрос к серверу: {"command": "status", "data": {}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"server":"running","transport":"TCP","protocol":"newline-delimited JSON","students_count":4,"groups":["ИУ7-31Б","ИУ7-42Б","ИУ7-43Б"],"average_grade":4.52,"uptime_seconds":1.73,"completed_commands":12,"active_connections":1,"total_connections":5}}
+2026-10-11 15:09:01 INFO    [MainThread] Соединение с сервером закрыто
+
+------------------------------------------------------------------------------
+3. КЛИЕНТ-НАБЛЮДАТЕЛЬ: общее хранилище после трёх параллельных клиентов
+------------------------------------------------------------------------------
+=== КЛИЕНТ УНИВЕРСИТЕТА === сервер 127.0.0.1:5509, тайм-аут 5.0 с
+>>> ЗАПРОС: {"command": "list", "data": {}}
+<<< ОТВЕТ (ok): {"count": 4, "students": [{"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "email": "client1-new@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.75}, {"id": 2, "name": "Петрова Анна Сергеевна", "group": "ИУ7-31Б", "grades": [4, 4, 3, 5], "email": "petrova@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.0}, {"id": 4, "name": "Новый Студент Клиента Два", "group": "ИУ7-42Б", "grades": [4, 4, 5], "email": "new2@bmstu.ru", "year": 3, "status": "active", "average_grade": 4.33}, {"id": 5, "name": "Новый Студент Клиента Три", "group": "ИУ7-43Б", "grades": [5, 5, 5], "email": "new3@bmstu.ru", "year": 3, "status": "active", "average_grade": 5.0}]}
+>>> ЗАПРОС: {"command": "status", "data": {}}
+<<< ОТВЕТ (ok): {"server": "running", "transport": "TCP", "protocol": "newline-delimited JSON", "students_count": 4, "groups": ["ИУ7-31Б", "ИУ7-42Б", "ИУ7-43Б"], "average_grade": 4.52, "uptime_seconds": 1.79, "completed_commands": 13, "active_connections": 1, "total_connections": 6}
+--- журнал клиента (stderr, модуль logging) ---
+2026-10-11 15:09:01 INFO    [MainThread] Подключение к серверу 127.0.0.1:5509 установлено
+2026-10-11 15:09:01 INFO    [MainThread] Запрос к серверу: {"command": "list", "data": {}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"count":4,"students":[{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"email":"client1-new@bmstu.ru","year":2,"status":"active","average_grade":4.75},{"id":2,"name":"Петрова Анна Сергеевна","group":"ИУ7-31Б","grades":[4,4,3,5],"email":"petrova@bmstu.ru","year":2,"status":"active","average_grade":4.0},{"id":4,"name":"Новый Студент Клиента Два","group":"ИУ7-42Б","grades":[4,4,5],"email":"new2@bmstu.ru","year":3,"status":"active","average_grade":4.33},{"id":5,"name":"Новый Студент Клиента Три","group":"ИУ7-43Б","grades":[5,5,5],"email":"new3@bmstu.ru","year":3,"status":"active","average_grade":5.0}]}}
+2026-10-11 15:09:01 INFO    [MainThread] Запрос к серверу: {"command": "status", "data": {}}
+2026-10-11 15:09:01 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"server":"running","transport":"TCP","protocol":"newline-delimited JSON","students_count":4,"groups":["ИУ7-31Б","ИУ7-42Б","ИУ7-43Б"],"average_grade":4.52,"uptime_seconds":1.79,"completed_commands":13,"active_connections":1,"total_connections":6}}
+2026-10-11 15:09:01 INFO    [MainThread] Соединение с сервером закрыто
+--- код возврата: 0 ---
+
+------------------------------------------------------------------------------
+4. ЖУРНАЛ СЕРВЕРА: три подключения и параллельные потоки client_0..client_2
+------------------------------------------------------------------------------
+2026-10-11 15:09:00 INFO    [MainThread] Загружены демонстрационные данные: 3 студента
+2026-10-11 15:09:00 INFO    [MainThread] Сервер запущен: 127.0.0.1:5509 (тайм-аут клиента 30.0 с, поддержано команд: 10)
+2026-10-11 15:09:00 INFO    [udp-server] UDP-сервер запущен: 127.0.0.1:5509 (команда: status)
+2026-10-11 15:09:00 INFO    [MainThread] Клиент подключён: 127.0.0.1:57794 (всего подключений: 1, активных: 1)
+2026-10-11 15:09:00 INFO    [client_0] Клиент 127.0.0.1:57794 отключился (закрыл соединение)
+2026-10-11 15:09:00 INFO    [client_0] Соединение с 127.0.0.1:57794 закрыто
+2026-10-11 15:09:00 INFO    [MainThread] Клиент подключён: 127.0.0.1:57796 (всего подключений: 2, активных: 1)
+2026-10-11 15:09:00 INFO    [client_0] Клиент 127.0.0.1:57796 отключился (закрыл соединение)
+2026-10-11 15:09:00 INFO    [client_0] Соединение с 127.0.0.1:57796 закрыто
+2026-10-11 15:09:00 INFO    [MainThread] Клиент подключён: 127.0.0.1:57797 (всего подключений: 3, активных: 1)
+2026-10-11 15:09:00 INFO    [client_0] Получена команда от 127.0.0.1:57797: {"command": "get", "data": {"id": 2}}
+2026-10-11 15:09:00 INFO    [client_0] Команда 'get' успешно выполнена для 127.0.0.1:57797
+2026-10-11 15:09:00 INFO    [MainThread] Клиент подключён: 127.0.0.1:57798 (всего подключений: 4, активных: 2)
+2026-10-11 15:09:00 INFO    [client_0] Получена команда от 127.0.0.1:57797: {"command": "average_grade", "data": {"id": 2}}
+2026-10-11 15:09:00 INFO    [client_0] Команда 'average_grade' успешно выполнена для 127.0.0.1:57797
+2026-10-11 15:09:00 INFO    [client_1] Получена команда от 127.0.0.1:57798: {"command": "get", "data": {"id": 1}}
+2026-10-11 15:09:00 INFO    [client_1] Команда 'get' успешно выполнена для 127.0.0.1:57798
+2026-10-11 15:09:00 INFO    [client_0] Получена команда от 127.0.0.1:57797: {"command": "sleep", "data": {"seconds": 1}}
+2026-10-11 15:09:00 WARNING [client_0] Команда sleep: сервер занят 1.0 с (клиент 127.0.0.1:57797)
+2026-10-11 15:09:00 INFO    [client_1] Получена команда от 127.0.0.1:57798: {"command": "average_grade", "data": {"id": 1}}
+2026-10-11 15:09:00 INFO    [client_1] Команда 'average_grade' успешно выполнена для 127.0.0.1:57798
+2026-10-11 15:09:00 INFO    [client_1] Получена команда от 127.0.0.1:57798: {"command": "sleep", "data": {"seconds": 1}}
+2026-10-11 15:09:00 WARNING [client_1] Команда sleep: сервер занят 1.0 с (клиент 127.0.0.1:57798)
+2026-10-11 15:09:00 INFO    [MainThread] Клиент подключён: 127.0.0.1:57799 (всего подключений: 5, активных: 3)
+2026-10-11 15:09:00 INFO    [client_2] Получена команда от 127.0.0.1:57799: {"command": "get", "data": {"id": 3}}
+2026-10-11 15:09:00 INFO    [client_2] Команда 'get' успешно выполнена для 127.0.0.1:57799
+2026-10-11 15:09:00 INFO    [client_2] Получена команда от 127.0.0.1:57799: {"command": "average_grade", "data": {"id": 3}}
+2026-10-11 15:09:00 INFO    [client_2] Команда 'average_grade' успешно выполнена для 127.0.0.1:57799
+2026-10-11 15:09:00 INFO    [client_2] Получена команда от 127.0.0.1:57799: {"command": "sleep", "data": {"seconds": 1}}
+2026-10-11 15:09:00 WARNING [client_2] Команда sleep: сервер занят 1.0 с (клиент 127.0.0.1:57799)
+2026-10-11 15:09:01 INFO    [client_0] Команда 'sleep' успешно выполнена для 127.0.0.1:57797
+2026-10-11 15:09:01 INFO    [client_0] Получена команда от 127.0.0.1:57797: {"command": "create", "data": {"name": "Новый Студент Клиента Два", "group": "ИУ7-42Б", "grades": [4, 4, 5], "email": "new2@bmstu.ru", "year": 3}}
+2026-10-11 15:09:01 INFO    [client_1] Команда 'sleep' успешно выполнена для 127.0.0.1:57798
+2026-10-11 15:09:01 INFO    [client_0] Команда 'create' успешно выполнена для 127.0.0.1:57797
+2026-10-11 15:09:01 INFO    [client_1] Получена команда от 127.0.0.1:57798: {"command": "update", "data": {"id": 1, "email": "client1-new@bmstu.ru"}}
+2026-10-11 15:09:01 INFO    [client_0] Получена команда от 127.0.0.1:57797: {"command": "groups", "data": {}}
+2026-10-11 15:09:01 INFO    [client_1] Команда 'update' успешно выполнена для 127.0.0.1:57798
+2026-10-11 15:09:01 INFO    [client_0] Команда 'groups' успешно выполнена для 127.0.0.1:57797
+2026-10-11 15:09:01 INFO    [client_0] Клиент 127.0.0.1:57797 отключился (закрыл соединение)
+2026-10-11 15:09:01 INFO    [client_1] Получена команда от 127.0.0.1:57798: {"command": "list", "data": {"name_contains": "Иванов"}}
+2026-10-11 15:09:01 INFO    [client_2] Команда 'sleep' успешно выполнена для 127.0.0.1:57799
+2026-10-11 15:09:01 INFO    [client_1] Команда 'list' успешно выполнена для 127.0.0.1:57798
+2026-10-11 15:09:01 INFO    [client_0] Соединение с 127.0.0.1:57797 закрыто
+2026-10-11 15:09:01 INFO    [client_1] Клиент 127.0.0.1:57798 отключился (закрыл соединение)
+2026-10-11 15:09:01 INFO    [client_1] Соединение с 127.0.0.1:57798 закрыто
+2026-10-11 15:09:01 INFO    [client_2] Получена команда от 127.0.0.1:57799: {"command": "create", "data": {"name": "Новый Студент Клиента Три", "group": "ИУ7-43Б", "grades": [5, 5, 5], "email": "new3@bmstu.ru", "year": 3}}
+2026-10-11 15:09:01 INFO    [client_2] Команда 'create' успешно выполнена для 127.0.0.1:57799
+2026-10-11 15:09:01 INFO    [client_2] Получена команда от 127.0.0.1:57799: {"command": "delete", "data": {"id": 3}}
+2026-10-11 15:09:01 INFO    [client_2] Команда 'delete' успешно выполнена для 127.0.0.1:57799
+2026-10-11 15:09:01 INFO    [client_2] Получена команда от 127.0.0.1:57799: {"command": "status", "data": {}}
+2026-10-11 15:09:01 INFO    [client_2] Команда 'status' успешно выполнена для 127.0.0.1:57799
+2026-10-11 15:09:01 INFO    [client_2] Клиент 127.0.0.1:57799 отключился (закрыл соединение)
+2026-10-11 15:09:01 INFO    [client_2] Соединение с 127.0.0.1:57799 закрыто
+2026-10-11 15:09:01 INFO    [MainThread] Клиент подключён: 127.0.0.1:57803 (всего подключений: 6, активных: 1)
+2026-10-11 15:09:01 INFO    [client_0] Получена команда от 127.0.0.1:57803: {"command": "list", "data": {}}
+2026-10-11 15:09:01 INFO    [client_0] Команда 'list' успешно выполнена для 127.0.0.1:57803
+2026-10-11 15:09:01 INFO    [client_0] Получена команда от 127.0.0.1:57803: {"command": "status", "data": {}}
+2026-10-11 15:09:01 INFO    [client_0] Команда 'status' успешно выполнена для 127.0.0.1:57803
+2026-10-11 15:09:01 INFO    [client_0] Клиент 127.0.0.1:57803 отключился (закрыл соединение)
+2026-10-11 15:09:01 INFO    [client_0] Соединение с 127.0.0.1:57803 закрыто
+
+------------------------------------------------------------------------------
+5. ОСВОБОЖДЕНИЕ ПОРТА
+------------------------------------------------------------------------------
+Порт 5509 свободен после остановки сервера: да

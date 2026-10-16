@@ -1,0 +1,12 @@
+﻿report.json успешно создан и проверен через json.load
+  practice : 11
+  title    : ПРАКТИЧЕСКАЯ РАБОТА №11
+  subtitle : Реляционные и нереляционные базы данных. Хранение данных и использование CDN
+  блоков   : 58
+    code       : 3
+    codefile   : 17
+    heading    : 13
+    label      : 2
+    outputfile : 6
+    text       : 17
+  файл     : C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice11\report.json

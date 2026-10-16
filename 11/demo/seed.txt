@@ -1,0 +1,8 @@
+﻿[seed] удалён старый файл БД: cinema.db
+[seed] схема создана: 6 таблиц, 6 индексов, ограничения PK/FK/NOT NULL/UNIQUE/CHECK
+[seed] фильмов: 12 (требуется >= 10)
+[seed] жанров: 7
+[seed] связей N:M movie_genres: 26
+[seed] залов: 4
+[seed] сеансов: 14
+[seed] база данных готова: C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice11\cinema.db

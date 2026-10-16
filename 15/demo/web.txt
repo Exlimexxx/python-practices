@@ -1,0 +1,119 @@
+﻿ЛАБОРАТОРНАЯ РАБОТА №15 · Вариант 4 «Отель» · Flask + SQLAlchemy
+Запуск: C:\Users\Artem\AppData\Local\Programs\Python\Python313\python.exe run.py  (cwd=C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice15)
+БД: C:\Users\Artem\Documents\deepseek-harness\default-workspace\work\practice15\demo\demo_hotel.db
+Сервер готов: http://127.0.0.1:5015 (ответ /api = 200)
+
+==============================================================================
+1. HTML-ИНТЕРФЕЙС (серверный рендеринг Jinja2)
+==============================================================================
+Главная страница                                           -> HTTP 200  [text/html]
+    <title>: Главная · Отель «Гранд»
+    Текст страницы: Главная · Отель «Гранд» 🏨 Отель «Гранд» Главная Номера Гости Бронирования REST API Панель администратора отеля Управление номерным фондом, гостями и бронировани...
+Список номеров                                             -> HTTP 200  [text/html]
+    <title>: Номера · Отель «Гранд»
+    Текст страницы: Номера · Отель «Гранд» 🏨 Отель «Гранд» Главная Номера Гости Бронирования REST API Номера отеля + Добавить номер Найдено записей: 6 Поиск Тип номера — все — Стан...
+Карточка номера №101                                       -> HTTP 200  [text/html]
+    <title>: Номер 101 · Отель «Гранд»
+    Текст страницы: Номер 101 · Отель «Гранд» 🏨 Отель «Гранд» Главная Номера Гости Бронирования REST API Номера / № 101 Номер № 101 Тип Стандарт Этаж 1 Вместимость 2 чел. Цена за н...
+Список гостей                                              -> HTTP 200  [text/html]
+    <title>: Гости · Отель «Гранд»
+    Текст страницы: Гости · Отель «Гранд» 🏨 Отель «Гранд» Главная Номера Гости Бронирования REST API Гости отеля + Добавить гостя Найдено записей: 3 Поиск Город — все — Казань Моск...
+Карточка гостя №1                                          -> HTTP 200  [text/html]
+    <title>: Иванов Иван Иванович · Отель «Гранд»
+    Текст страницы: Иванов Иван Иванович · Отель «Гранд» 🏨 Отель «Гранд» Главная Номера Гости Бронирования REST API Гости / Иванов Иван Иванович Иванов Иван Иванович Email ivanov@e...
+Список бронирований                                        -> HTTP 200  [text/html]
+    <title>: Бронирования · Отель «Гранд»
+    Текст страницы: Бронирования · Отель «Гранд» 🏨 Отель «Гранд» Главная Номера Гости Бронирования REST API Бронирования + Новое бронирование Найдено записей: 3 Поиск Статус — все ...
+Форма создания номера                                      -> HTTP 200  [text/html]
+    <title>: Новый номер · Отель «Гранд»
+    Текст страницы: Новый номер · Отель «Гранд» 🏨 Отель «Гранд» Главная Номера Гости Бронирования REST API Номера / создание Новый номер Ном...
+Поиск+фильтр+сортировка: /rooms?search=люкс&sort=price&order=desc -> HTTP 200  [text/html]
+    <title>: Номера · Отель «Гранд»
+Фильтр: только закрытые номера /rooms?is_active=0          -> HTTP 200  [text/html]
+    <title>: Номера · Отель «Гранд»
+Несуществующая страница (404)                              -> HTTP 404  [text/html]
+    <title>: 404 — не найдено · Отель «Гранд»
+Несуществующий адрес (404)                                 -> HTTP 404  [text/html]
+    <title>: 404 — не найдено · Отель «Гранд»
+
+==============================================================================
+2. REST API: CRUD, коды ответов, ошибки
+==============================================================================
+GET /api/rooms                                             -> HTTP 200  [application/json]
+    JSON: {"count": 6, "items": [{"capacity": 2, "created_at": "2026-10-11T22:20:34", "description": "Стандартный двухместный номер с видом во двор.", "floor": 1, "id": 1, "is_active": true, "number": "101", "price_per_night": 4200.0, "room_type": "Стандарт", "status_label": "Доступен"}, {"capacity": 1, "created_at": "2026-10-11T22:20:34", "description": "Одноместный номер для командировок.", "floor": 1, "id": 2, "is_active": true, "number": "102", "price_per_night": 3100.0, "room_type": "Стандарт", "status_label": "Доступен"}, {"capacity": 3, "created_at": "2026-10-11T22:20:34", "description": "Просторный номер с балконом и кондиционером.", "floor": 2, "id": 3, "is_active": true, "number": "203", "price_per_night": 6800.0, "room_type": "Комфорт", "status_label": "Доступен"}, {"capacity": 4, "created_at": "2026-10-11T22:20:34", "description": "Люкс с гостиной зоной и панорамным окном.", "floor": 3, "id": 4, "is_active": true, "number": "305", "price_per_night": 12500.0, "room_type": "Люкс", "status_label": "Доступен"}, {"capacity": 5, "created_at": "2026-10-11T22:20:34", "description": "Двухкомнатные апартаменты с кухней.", "floor": 4, "id": 5, "is_active": true, "number": "401", "price_per_
+GET /api/rooms/1                                           -> HTTP 200  [application/json]
+    JSON: {"bookings": [{"check_in": "2026-10-13", "check_out": "2026-10-16", "comment": "Заезд после 14:00", "created_at": "2026-10-11T22:20:34", "guest_id": 1, "guests_count": 2, "id": 1, "nights": 3, "room_id": 1, "status": "confirmed", "status_label": "Подтверждено", "total_price": 12600.0}], "capacity": 2, "created_at": "2026-10-11T22:20:34", "description": "Стандартный двухместный номер с видом во двор.", "floor": 1, "id": 1, "is_active": true, "number": "101", "price_per_night": 4200.0, "room_type": "Стандарт", "status_label": "Доступен"}
+POST /api/rooms (создание)                                 -> HTTP 201  [application/json]
+    JSON: {"capacity": 3, "created_at": "2026-10-11T22:20:34", "description": "Номер из REST API", "floor": 5, "id": 7, "is_active": true, "number": "512", "price_per_night": 7200.0, "room_type": "Комфорт", "status_label": "Доступен"}
+PUT /api/rooms/7                                           -> HTTP 200  [application/json]
+    JSON: {"capacity": 3, "created_at": "2026-10-11T22:20:34", "description": "Номер из REST API", "floor": 5, "id": 7, "is_active": true, "number": "512", "price_per_night": 7500.0, "room_type": "Комфорт", "status_label": "Доступен"}
+PATCH /api/rooms/7                                         -> HTTP 200  [application/json]
+    JSON: {"capacity": 3, "created_at": "2026-10-11T22:20:34", "description": "Цена обновлена", "floor": 5, "id": 7, "is_active": true, "number": "512", "price_per_night": 7500.0, "room_type": "Комфорт", "status_label": "Доступен"}
+GET /api/rooms/7                                           -> HTTP 200  [application/json]
+    JSON: {"bookings": [], "capacity": 3, "created_at": "2026-10-11T22:20:34", "description": "Цена обновлена", "floor": 5, "id": 7, "is_active": true, "number": "512", "price_per_night": 7500.0, "room_type": "Комфорт", "status_label": "Доступен"}
+POST /api/rooms без обязательного поля (400)               -> HTTP 400  [application/json]
+    JSON: {"error": "ValidationError", "message": "Поле «Номер» обязательно для заполнения", "status": 400}
+POST /api/rooms с дубликатом номера (400)                  -> HTTP 400  [application/json]
+    JSON: {"error": "ValidationError", "message": "Номер «101» уже существует", "status": 400}
+GET /api/rooms/424242 (404)                                -> HTTP 404  [application/json]
+    JSON: {"error": "NotFoundError", "message": "Номер с идентификатором 424242 не найден", "status": 404}
+DELETE /api/rooms (405)                                    -> HTTP 405  [application/json]
+    JSON: {"error": "MethodNotAllowed", "message": "Метод не поддерживается", "status": 405}
+GET /api/rooms?search=люкс&sort=price&order=desc           -> HTTP 200  [application/json]
+    JSON: {"count": 1, "items": [{"capacity": 4, "created_at": "2026-10-11T22:20:34", "description": "Люкс с гостиной зоной и панорамным окном.", "floor": 3, "id": 4, "is_active": true, "number": "305", "price_per_night": 12500.0, "room_type": "Люкс", "status_label": "Доступен"}]}
+POST /api/guests (создание)                                -> HTTP 201  [application/json]
+    JSON: {"city": "Тверь", "created_at": "2026-10-11T22:20:34", "email": "demo@example.com", "full_name": "Демо Гость", "id": 4, "passport": "9999 000000", "phone": "+7-999-000-11-22"}
+POST /api/guests с плохим email (400)                      -> HTTP 400  [application/json]
+    JSON: {"error": "ValidationError", "message": "Email указан в некорректном формате", "status": 400}
+GET /api/guests/4                                          -> HTTP 200  [application/json]
+    JSON: {"bookings": [], "city": "Тверь", "created_at": "2026-10-11T22:20:34", "email": "demo@example.com", "full_name": "Демо Гость", "id": 4, "passport": "9999 000000", "phone": "+7-999-000-11-22"}
+DELETE /api/rooms/7 -> HTTP 204 (No Content, тело пустое: '')
+
+==============================================================================
+3. БИЗНЕС-ЛОГИКА: бронирование и проверка пересечения дат
+==============================================================================
+Сценарий: номер №101, 2026-11-11 → 2026-11-15 (4 ночей), цена за ночь 4200.00 ₽
+GET /api/rooms/1/availability (свободно?)                  -> HTTP 200  [application/json]
+    JSON: {"available": true, "check_in": "2026-11-11", "check_out": "2026-11-15", "conflicts": [], "estimated_price": 16800.0, "nights": 4, "room_id": 1, "room_number": "101"}
+    Расчётная стоимость: 16800.0 ₽
+POST /api/bookings (бронирование)                          -> HTTP 201  [application/json]
+    JSON: {"check_in": "2026-11-11", "check_out": "2026-11-15", "comment": "Демонстрационное бронирование", "created_at": "2026-10-11T22:20:34", "guest": {"city": "Тверь", "created_at": "2026-10-11T22:20:34", "email": "demo@example.com", "full_name": "Демо Гость", "id": 4, "passport": "9999 000000", "phone": "+7-999-000-11-22"}, "guest_id": 4, "guests_count": 2, "id": 4, "nights": 4, "room": {"capacity": 2, "created_at": "2026-10-11T22:20:34", "description": "Стандартный двухместный номер с видом во двор.", "floor": 1, "id": 1, "is_active": true, "number": "101", "price_per_night": 4200.0, "room_type": "Стандарт", "status_label": "Доступен"}, "room_id": 1, "status": "confirmed", "status_label": "Подтверждено", "total_price": 16800.0}
+POST /api/bookings теми же датами (ожидается 409)          -> HTTP 409  [application/json]
+    JSON: {"check_in": "2026-11-12", "check_out": "2026-11-17", "conflicts": [{"check_in": "2026-11-11", "check_out": "2026-11-15", "comment": "Демонстрационное бронирование", "created_at": "2026-10-11T22:20:34", "guest_id": 4, "guests_count": 2, "id": 4, "nights": 4, "room_id": 1, "status": "confirmed", "status_label": "Подтверждено", "total_price": 16800.0}], "error": "BookingConflictError", "message": "Номер уже забронирован на пересекающиеся даты", "room_id": 1, "status": 409}
+POST /api/bookings сразу после выезда (201, пересечения нет) -> HTTP 201  [application/json]
+    JSON: {"check_in": "2026-11-15", "check_out": "2026-11-17", "comment": "Демонстрационное бронирование", "created_at": "2026-10-11T22:20:34", "guest": {"city": "Тверь", "created_at": "2026-10-11T22:20:34", "email": "demo@example.com", "full_name": "Демо Гость", "id": 4, "passport": "9999 000000", "phone": "+7-999-000-11-22"}, "guest_id": 4, "guests_count": 2, "id": 5, "nights": 2, "room": {"capacity": 2, "created_at": "2026-10-11T22:20:34", "description": "Стандартный двухместный номер с видом во двор.", "floor": 1, "id": 1, "is_active": true, "number": "101", "price_per_night": 4200.0, "room_type": "Стандарт", "status_label": "Доступен"}, "room_id": 1, "status": "confirmed", "status_label": "Подтверждено", "total_price": 8400.0}
+POST /api/bookings с check_out <= check_in (400)           -> HTTP 400  [application/json]
+    JSON: {"error": "ValidationError", "message": "Дата выезда должна быть позже даты заезда", "status": 400}
+POST /api/bookings на 5 гостей в 2-местный номер (400)     -> HTTP 400  [application/json]
+    JSON: {"error": "RoomCapacityError", "message": "Номер «101» вмещает не более 2 гостей", "status": 400}
+Отмена бронирования и повторное использование дат:
+POST /api/bookings/4/cancel                                -> HTTP 200  [application/json]
+    JSON: {"check_in": "2026-11-11", "check_out": "2026-11-15", "comment": "Демонстрационное бронирование", "created_at": "2026-10-11T22:20:34", "guest": {"city": "Тверь", "created_at": "2026-10-11T22:20:34", "email": "demo@example.com", "full_name": "Демо Гость", "id": 4, "passport": "9999 000000", "phone": "+7-999-000-11-22"}, "guest_id": 4, "guests_count": 2, "id": 4, "nights": 4, "room": {"capacity": 2, "created_at": "2026-10-11T22:20:34", "description": "Стандартный двухместный номер с видом во двор.", "floor": 1, "id": 1, "is_active": true, "number": "101", "price_per_night": 4200.0, "room_type": "Стандарт", "status_label": "Доступен"}, "room_id": 1, "status": "cancelled", "status_label": "Отменено", "total_price": 16800.0}
+POST /api/bookings повторно на освободившиеся даты (201)   -> HTTP 201  [application/json]
+    JSON: {"check_in": "2026-11-11", "check_out": "2026-11-15", "comment": "Демонстрационное бронирование", "created_at": "2026-10-11T22:20:34", "guest": {"city": "Тверь", "created_at": "2026-10-11T22:20:34", "email": "demo@example.com", "full_name": "Демо Гость", "id": 4, "passport": "9999 000000", "phone": "+7-999-000-11-22"}, "guest_id": 4, "guests_count": 2, "id": 6, "nights": 4, "room": {"capacity": 2, "created_at": "2026-10-11T22:20:34", "description": "Стандартный двухместный номер с видом во двор.", "floor": 1, "id": 1, "is_active": true, "number": "101", "price_per_night": 4200.0, "room_type": "Стандарт", "status_label": "Доступен"}, "room_id": 1, "status": "confirmed", "status_label": "Подтверждено", "total_price": 16800.0}
+
+==============================================================================
+4. HTML-ФОРМА БРОНИРОВАНИЯ (flash-сообщения и валидация)
+==============================================================================
+POST /bookings/create -> HTTP 200
+    Есть успешное flash-сообщение: True
+POST /bookings/create с пересечением -> HTTP 409
+    Показано сообщение об отказе: True
+POST /bookings/create без дат -> HTTP 400
+    Показано сообщение валидации: True
+
+==============================================================================
+5. ПРОВЕРКА API КЛИЕНТОМ httpx
+==============================================================================
+httpx GET /api/bookings?status=confirmed&sort=price&order=desc -> HTTP 200
+    Подтверждённых броней: 5
+    - №2: номер 203, 2026-10-22..2026-10-25, 20400.0 ₽
+    - №6: номер 101, 2026-11-11..2026-11-15, 16800.0 ₽
+    - №1: номер 101, 2026-10-13..2026-10-16, 12600.0 ₽
+httpx GET /api -> HTTP 200: {"resources": {"availability": "/api/rooms/<id>/availability?check_in=&check_out=", "bookings": "/api/bookings", "guests": "/api/guests", "rooms": "/api/rooms"}, "service": "Hotel Booking API (вариант 4 «Отель»)", "versi
+
+==============================================================================
+ДЕМОНСТРАЦИЯ ЗАВЕРШЕНА
+==============================================================================
+Сервер остановлен (код возврата 1).
+Журнал сервера сохранён в demo/server.log, stdout сервера — в demo/server_stdout.log

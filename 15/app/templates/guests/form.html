@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Редактирование гостя' if guest else 'Новый гость' }}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs">
+    <a href="{{ url_for('web.guest_list') }}">Гости</a> / {{ 'редактирование' if guest else 'создание' }}
+</nav>
+<h1>{{ 'Редактирование: ' ~ guest.full_name if guest else 'Новый гость' }}</h1>
+
+<form class="entity-form" method="post">
+    <label>ФИО *
+        <input type="text" name="full_name" maxlength="120" required
+               value="{{ form.get('full_name') or (guest.full_name if guest else '') }}">
+    </label>
+    <label>Email *
+        <input type="email" name="email" maxlength="120" required
+               value="{{ form.get('email') or (guest.email if guest else '') }}">
+    </label>
+    <label>Телефон
+        <input type="text" name="phone" maxlength="30"
+               value="{{ form.get('phone') or (guest.phone if guest else '') }}">
+    </label>
+    <label>Паспорт
+        <input type="text" name="passport" maxlength="20"
+               value="{{ form.get('passport') or (guest.passport if guest else '') }}">
+    </label>
+    <label>Город
+        <input type="text" name="city" maxlength="80"
+               value="{{ form.get('city') or (guest.city if guest else '') }}">
+    </label>
+    <div class="form-actions">
+        <button class="btn btn-primary" type="submit">{{ 'Сохранить' if guest else 'Создать' }}</button>
+        <a class="btn btn-link" href="{{ url_for('web.guest_list') }}">Отмена</a>
+    </div>
+</form>
+{% endblock %}

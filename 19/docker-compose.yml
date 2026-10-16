@@ -1,0 +1,64 @@
+services:
+  gateway:
+    build: .
+    command: ["uvicorn", "app.gateway:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports: ["8000:8000"]
+    environment:
+      ROOMS_SERVICE_URL: http://rooms-service:8001
+      GUESTS_SERVICE_URL: http://guests-service:8002
+      BOOKINGS_SERVICE_URL: http://bookings-service:8003
+    depends_on: [rooms-service, guests-service, bookings-service]
+
+  rooms-service:
+    build: .
+    command: ["uvicorn", "app.rooms_service:app", "--host", "0.0.0.0", "--port", "8001"]
+    environment: {ROOMS_DB_PATH: /data/rooms.db}
+    volumes: ["rooms_data:/data"]
+    expose: ["8001"]
+
+  guests-service:
+    build: .
+    command: ["uvicorn", "app.guests_service:app", "--host", "0.0.0.0", "--port", "8002"]
+    environment: {GUESTS_DB_PATH: /data/guests.db}
+    volumes: ["guests_data:/data"]
+    expose: ["8002"]
+
+  bookings-service:
+    build: .
+    command: ["uvicorn", "app.bookings_service:app", "--host", "0.0.0.0", "--port", "8003"]
+    environment:
+      BOOKINGS_DB_PATH: /data/bookings.db
+      ROOMS_SERVICE_URL: http://rooms-service:8001
+      GUESTS_SERVICE_URL: http://guests-service:8002
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    volumes: ["bookings_data:/data"]
+    depends_on:
+      rooms-service:
+        condition: service_started
+      guests-service:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    expose: ["8003"]
+
+  notification-service:
+    build: .
+    command: ["python", "-m", "app.notifications_service"]
+    environment: {RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports: ["15672:15672"]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rooms_data:
+  guests_data:
+  bookings_data:

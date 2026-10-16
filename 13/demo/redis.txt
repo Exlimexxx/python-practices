@@ -1,0 +1,140 @@
+INFO     app.repository     | Индексы созданы: ['genres_rating', 'director_name', 'year_desc']
+INFO     app.repository     | Создан фильм 'Побег из Шоушенка' c _id=6acc0b7c2f66112e069b288e
+INFO     app.repository     | Создан фильм 'Крёстный отец' c _id=6acc0b7c2f66112e069b288f
+INFO     app.repository     | Создан фильм 'Тёмный рыцарь' c _id=6acc0b7c2f66112e069b2890
+INFO     app.repository     | Создан фильм 'Криминальное чтиво' c _id=6acc0b7c2f66112e069b2891
+INFO     app.repository     | Создан фильм 'Форрест Гамп' c _id=6acc0b7c2f66112e069b2892
+INFO     app.repository     | Создан фильм 'Начало' c _id=6acc0b7c2f66112e069b2893
+INFO     app.repository     | Создан фильм 'Матрица' c _id=6acc0b7c2f66112e069b2894
+INFO     app.repository     | Создан фильм 'Интерстеллар' c _id=6acc0b7c2f66112e069b2895
+INFO     app.repository     | Создан фильм 'Бойцовский клуб' c _id=6acc0b7c2f66112e069b2896
+INFO     app.repository     | Создан фильм 'Леон' c _id=6acc0b7c2f66112e069b2897
+INFO     app.repository     | Создан фильм 'Гладиатор' c _id=6acc0b7c2f66112e069b2898
+INFO     app.repository     | Создан фильм 'Отступники' c _id=6acc0b7c2f66112e069b2899
+INFO     app.repository     | Создан фильм 'Джанго освобождённый' c _id=6acc0b7c2f66112e069b289a
+INFO     app.repository     | Создан фильм 'Престиж' c _id=6acc0b7c2f66112e069b289b
+INFO     app.repository     | Создан фильм 'Властелин колец: Братство Кольца' c _id=6acc0b7c2f66112e069b289c
+INFO     app.repository     | Создан фильм 'Властелин колец: Две крепости' c _id=6acc0b7c2f66112e069b289d
+INFO     app.repository     | Создан фильм 'Паразиты' c _id=6acc0b7c2f66112e069b289e
+INFO     app.repository     | Создан фильм 'Джокер' c _id=6acc0b7c2f66112e069b289f
+INFO     app.repository     | Создан фильм 'Однажды в Голливуде' c _id=6acc0b7c2f66112e069b28a0
+INFO     app.repository     | Создан фильм 'Гравитация' c _id=6acc0b7c2f66112e069b28a1
+INFO     app.repository     | Создан фильм 'Дюна' c _id=6acc0b7c2f66112e069b28a2
+INFO     app.repository     | Создан фильм 'Бегущий по лезвию 2049' c _id=6acc0b7c2f66112e069b28a3
+INFO     app.repository     | Создан фильм 'Оппенгеймер' c _id=6acc0b7c2f66112e069b28a4
+INFO     app.repository     | Создан фильм 'Барби' c _id=6acc0b7c2f66112e069b28a5
+
+==============================================================================
+4. REDIS: СТРУКТУРЫ ДАННЫХ И КОМАНДЫ
+==============================================================================
+MongoDB : реальный сервер
+Redis   : in-memory fallback
+          причина: TimeoutError: Timeout connecting to server
+Документов movie: 24
+Подключение: InMemoryRedis
+
+==============================================================================
+4.1. String: SET / GET / EXPIRE / TTL / INCR / DEL
+==============================================================================
+> SET city:weather "Москва: +24"
+  True
+> GET city:weather
+  'Москва: +24'
+> EXPIRE city:weather 30
+  True
+> TTL city:weather
+  30
+> INCR counter:requests
+  1
+> INCRBY counter:requests 4
+  5
+> GET counter:requests
+  5
+> EXISTS city:weather counter:requests
+  2
+> TTL city:weather (через 1 c)
+  29
+> DEL city:weather
+  1
+> EXISTS city:weather
+  0
+
+==============================================================================
+4.2. Hash: HSET / HGET / HGETALL / HDEL
+==============================================================================
+> HSET cinema:movie:6acc0b7c2f66112e069b288e:meta title="Побег из Шоушенка" year=1994 rating=9.3
+  3
+> HGET cinema:movie:6acc0b7c2f66112e069b288e:meta title
+  'Побег из Шоушенка'
+> HGETALL cinema:movie:6acc0b7c2f66112e069b288e:meta
+  {'title': 'Побег из Шоушенка', 'year': 1994, 'rating': 9.3}
+> HDEL cinema:movie:6acc0b7c2f66112e069b288e:meta year
+  1
+
+==============================================================================
+4.3. List: RPUSH / LPUSH / LRANGE / LLEN / LTRIM
+==============================================================================
+> RPUSH cinema:schedule:2024-06-01 "10:30 Начало"
+  1
+> RPUSH cinema:schedule:2024-06-01 "14:00 Матрица" "18:30 Дюна"
+  3
+> LPUSH cinema:schedule:2024-06-01 "08:00 Утренний сеанс"
+  4
+> LRANGE cinema:schedule:2024-06-01 0 -1
+  ['08:00 Утренний сеанс', '10:30 Начало', '14:00 Матрица', '18:30 Дюна']
+> LLEN cinema:schedule:2024-06-01
+  4
+> LTRIM cinema:schedule:2024-06-01 0 2
+  True
+> LRANGE после LTRIM 0 -1
+  ['08:00 Утренний сеанс', '10:30 Начало', '14:00 Матрица']
+
+==============================================================================
+4.4. Set: SADD / SMEMBERS / SISMEMBER / SREM / SCARD
+==============================================================================
+> SADD cinema:halls:imax "IMAX-1" "IMAX-2"
+  2
+> SADD cinema:halls:imax "IMAX-2" "IMAX-3"
+  1
+> SMEMBERS cinema:halls:imax
+  ['IMAX-1', 'IMAX-2', 'IMAX-3']
+> SISMEMBER cinema:halls:imax "IMAX-1"
+  True
+> SREM cinema:halls:imax "IMAX-3"
+  1
+> SMEMBERS после SREM
+  ['IMAX-1', 'IMAX-2']
+
+==============================================================================
+4.5. Sorted Set: ZADD / ZRANGE / ZREVRANGE / ZSCORE / ZREM
+==============================================================================
+> ZADD cinema:rating:demo {Начало:8.8, Матрица:8.7, Побег:9.3}
+  3
+> ZRANGE cinema:rating:demo 0 -1 WITHSCORES
+  [('Матрица', 8.7), ('Начало', 8.8), ('Побег', 9.3)]
+> ZREVRANGE cinema:rating:demo 0 1 WITHSCORES
+  [('Побег', 9.3), ('Начало', 8.8)]
+> ZSCORE cinema:rating:demo Матрица
+  8.7
+> ZREM cinema:rating:demo Матрица
+  1
+
+==============================================================================
+4.6. Применение в предметной области: рейтинг популярных фильмов
+==============================================================================
+> ZREVRANGE cinema:rating 0 -1 WITHSCORES
+  [('Побег из Шоушенка', 9.3), ('Крёстный отец', 9.2), ('Тёмный рыцарь', 9.0)]
+INFO     app.service        | CACHE MISS cinema:movie:6acc0b7c2f66112e069b288e -> обращение к MongoDB
+INFO     app.service        | Данные помещены в Redis: cinema:movie:6acc0b7c2f66112e069b288e (TTL=60 c)
+INFO     app.service        | CACHE MISS cinema:movie:6acc0b7c2f66112e069b288f -> обращение к MongoDB
+INFO     app.service        | Данные помещены в Redis: cinema:movie:6acc0b7c2f66112e069b288f (TTL=60 c)
+INFO     app.service        | CACHE MISS cinema:movie:6acc0b7c2f66112e069b2890 -> обращение к MongoDB
+INFO     app.service        | Данные помещены в Redis: cinema:movie:6acc0b7c2f66112e069b2890 (TTL=60 c)
+INFO     app.service        | CACHE MISS cinema:movie:6acc0b7c2f66112e069b2891 -> обращение к MongoDB
+INFO     app.service        | Данные помещены в Redis: cinema:movie:6acc0b7c2f66112e069b2891 (TTL=60 c)
+> ZREVRANGE cinema:popular 0 -1 WITHSCORES
+  [('Криминальное чтиво', 1.0), ('Тёмный рыцарь', 1.0), ('Крёстный отец', 1.0), ('Побег из Шоушенка', 1.0)]
+> LRANGE cinema:recent 0 -1
+  ['Криминальное чтиво', 'Тёмный рыцарь', 'Крёстный отец', 'Побег из Шоушенка']
+
+ИТОГО выполнено команд Redis: 36

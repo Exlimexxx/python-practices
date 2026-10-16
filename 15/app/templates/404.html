@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}404 — не найдено{% endblock %}
+{% block content %}
+<div class="error-page">
+    <h1>404 · Страница не найдена</h1>
+    <p>Запрашиваемый объект или адрес отсутствует на сервере.</p>
+    {% if error %}<p class="muted">Детали: {{ error.message }}</p>{% endif %}
+    <p>Проверьте адрес или перейдите к разделам:</p>
+    <ul>
+        <li><a href="{{ url_for('web.index') }}">Главная</a></li>
+        <li><a href="{{ url_for('web.room_list') }}">Номера</a></li>
+        <li><a href="{{ url_for('web.guest_list') }}">Гости</a></li>
+        <li><a href="{{ url_for('web.booking_list') }}">Бронирования</a></li>
+    </ul>
+    <p><a class="btn btn-primary" href="{{ url_for('web.index') }}">Вернуться на главную</a></p>
+</div>
+{% endblock %}

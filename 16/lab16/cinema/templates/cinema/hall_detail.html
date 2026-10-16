@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ hall.name }}{% endblock %}
+{% block content %}
+<h2>Зал «{{ hall.name }}»</h2>
+<p><b>Размер:</b> {{ hall.rows }} рядов по {{ hall.seats_per_row }} мест ({{ hall.capacity }} мест)</p>
+<p><b>Действует:</b> {% if hall.is_active %}да{% else %}нет{% endif %}</p>
+<p><b>Описание:</b> {{ hall.description|default:"—" }}</p>
+
+<h3>Сеансы зала</h3>
+<table>
+    <tr><th>Фильм</th><th>Начало</th><th>Цена</th><th>Статус</th></tr>
+    {% for s in sessions %}
+        <tr>
+            <td><a href="{% url 'cinema:session_detail' s.pk %}">{{ s.movie.title }}</a></td>
+            <td>{{ s.start_time|date:"d.m.Y H:i" }}</td>
+            <td>{{ s.price }} ₽</td>
+            <td>{{ s.get_status_display }}</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="4">Сеансов нет.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

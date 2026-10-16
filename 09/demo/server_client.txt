@@ -1,0 +1,276 @@
+==============================================================================
+ДЕМОНСТРАЦИЯ 1: TCP-сервер и TCP-клиент (ЛР9, вариант 4, «Университет»)
+Дата и время запуска: 2026-10-11 15:24:20
+Сервер: 127.0.0.1:5509 (TCP), 127.0.0.1:5509 (UDP)
+Клиент запускается отдельным процессом: python client.py ...
+Весь вывод ниже -- реальный, полученный при выполнении скрипта.
+==============================================================================
+
+------------------------------------------------------------------------------
+1. ОШИБКА «СЕРВЕР НЕДОСТУПЕН» (порт 58334, никто не слушает)
+------------------------------------------------------------------------------
+$ python client.py --port 58334 --timeout 2 --batch
+stdin: {"command": "list", "data": {}}
+
+=== КЛИЕНТ УНИВЕРСИТЕТА === сервер 127.0.0.1:58334, тайм-аут 2.0 с
+[КЛИЕНТ] Ошибка подключения: Сервер 127.0.0.1:58334 недоступен (TimeoutError: timed out)
+--- код возврата: 1 ---
+
+------------------------------------------------------------------------------
+2. ЗАПУСК СЕРВЕРА (фоновый процесс subprocess.Popen)
+------------------------------------------------------------------------------
+$ python server.py --host 127.0.0.1 --port 5509 --udp-port 5509 --seed
+Сервер готов принимать соединения: да
+
+------------------------------------------------------------------------------
+3. ОСНОВНОЙ СЦЕНАРИЙ КЛИЕНТА (пакетный режим, --batch, тайм-аут 1.5 с)
+------------------------------------------------------------------------------
+Сценарий: demo/scripts/demo1_batch.jsonl
+Команды: ping, status, list, get, average_grade x3, create, update, groups, delete,
+а также ошибки: объект не найден, неизвестная команда, некорректный JSON,
+отсутствующие поля, некорректные значения и ситуация тайм-аута.
+
+=== КЛИЕНТ УНИВЕРСИТЕТА === сервер 127.0.0.1:5509, тайм-аут 1.5 с
+>>> ЗАПРОС: {"command": "ping", "data": {}}
+<<< ОТВЕТ (ok): {"pong": true, "echo": "", "time": 1791721463.3818717}
+>>> ЗАПРОС: {"command": "status", "data": {}}
+<<< ОТВЕТ (ok): {"server": "running", "transport": "TCP", "protocol": "newline-delimited JSON", "students_count": 3, "groups": ["ИУ7-31Б", "ИУ7-32Б"], "average_grade": 4.03, "uptime_seconds": 0.7, "completed_commands": 0, "active_connections": 1, "total_connections": 3}
+>>> ЗАПРОС: {"command": "list", "data": {}}
+<<< ОТВЕТ (ok): {"count": 3, "students": [{"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "email": "ivanov@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.75}, {"id": 2, "name": "Петрова Анна Сергеевна", "group": "ИУ7-31Б", "grades": [4, 4, 3, 5], "email": "petrova@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.0}, {"id": 3, "name": "Сидоров Пётр Алексеевич", "group": "ИУ7-32Б", "grades": [3, 4, 3], "email": "sidorov@bmstu.ru", "year": 2, "status": "academic_leave", "average_grade": 3.33}]}
+>>> ЗАПРОС: {"command": "get", "data": {"id": 1}}
+<<< ОТВЕТ (ok): {"student": {"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "email": "ivanov@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.75}}
+>>> ЗАПРОС: {"command": "average_grade", "data": {"id": 1}}
+<<< ОТВЕТ (ok): {"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "grades_count": 4, "average_grade": 4.75, "min_grade": 4, "max_grade": 5}
+>>> ЗАПРОС: {"command": "average_grade", "data": {"id": 2}}
+<<< ОТВЕТ (ok): {"id": 2, "name": "Петрова Анна Сергеевна", "group": "ИУ7-31Б", "grades": [4, 4, 3, 5], "grades_count": 4, "average_grade": 4.0, "min_grade": 3, "max_grade": 5}
+>>> ЗАПРОС: {"command": "average_grade", "data": {"id": 3}}
+<<< ОТВЕТ (ok): {"id": 3, "name": "Сидоров Пётр Алексеевич", "group": "ИУ7-32Б", "grades": [3, 4, 3], "grades_count": 3, "average_grade": 3.33, "min_grade": 3, "max_grade": 4}
+>>> ЗАПРОС: {"command": "create", "data": {"name": "Кузнецов Артём Игоревич", "group": "ИУ7-33Б", "grades": [5, 4, 5], "email": "kuznetsov@bmstu.ru", "year": 3}}
+<<< ОТВЕТ (ok): {"student": {"id": 4, "name": "Кузнецов Артём Игоревич", "group": "ИУ7-33Б", "grades": [5, 4, 5], "email": "kuznetsov@bmstu.ru", "year": 3, "status": "active", "average_grade": 4.67}, "message": "Студент создан"}
+>>> ЗАПРОС: {"command": "get", "data": {"id": 4}}
+<<< ОТВЕТ (ok): {"student": {"id": 4, "name": "Кузнецов Артём Игоревич", "group": "ИУ7-33Б", "grades": [5, 4, 5], "email": "kuznetsov@bmstu.ru", "year": 3, "status": "active", "average_grade": 4.67}}
+>>> ЗАПРОС: {"command": "update", "data": {"id": 4, "grades": [5, 5, 5], "group": "ИУ7-34Б"}}
+<<< ОТВЕТ (ok): {"student": {"id": 4, "name": "Кузнецов Артём Игоревич", "group": "ИУ7-34Б", "grades": [5, 5, 5], "email": "kuznetsov@bmstu.ru", "year": 3, "status": "active", "average_grade": 5.0}, "message": "Данные студента обновлены"}
+>>> ЗАПРОС: {"command": "average_grade", "data": {"id": 4}}
+<<< ОТВЕТ (ok): {"id": 4, "name": "Кузнецов Артём Игоревич", "group": "ИУ7-34Б", "grades": [5, 5, 5], "grades_count": 3, "average_grade": 5.0, "min_grade": 5, "max_grade": 5}
+>>> ЗАПРОС: {"command": "groups", "data": {}}
+<<< ОТВЕТ (ok): {"groups_count": 3, "groups": [{"group": "ИУ7-31Б", "students_count": 2, "average_grade": 4.38, "best_student": "Иванов Иван Иванович"}, {"group": "ИУ7-32Б", "students_count": 1, "average_grade": 3.33, "best_student": "Сидоров Пётр Алексеевич"}, {"group": "ИУ7-34Б", "students_count": 1, "average_grade": 5.0, "best_student": "Кузнецов Артём Игоревич"}]}
+>>> ЗАПРОС: {"command": "list", "data": {"group": "ИУ7-31Б", "sort_by": "average"}}
+<<< ОТВЕТ (ok): {"count": 2, "students": [{"id": 2, "name": "Петрова Анна Сергеевна", "group": "ИУ7-31Б", "grades": [4, 4, 3, 5], "email": "petrova@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.0}, {"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "email": "ivanov@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.75}]}
+>>> ЗАПРОС: {"command": "delete", "data": {"id": 4}}
+<<< ОТВЕТ (ok): {"student": {"id": 4, "name": "Кузнецов Артём Игоревич", "group": "ИУ7-34Б", "grades": [5, 5, 5], "email": "kuznetsov@bmstu.ru", "year": 3, "status": "active", "average_grade": 5.0}, "message": "Студент удалён"}
+>>> ЗАПРОС: {"command": "get", "data": {"id": 4}}
+<<< ОТВЕТ (error, код not_found): Студент с id=4 не найден
+>>> ЗАПРОС: {"command": "teleport", "data": {}}
+<<< ОТВЕТ (error, код unknown_command): Неизвестная команда 'teleport'. Доступны: list, get, create, update, delete, average_grade, groups, status, ping, sleep
+>>> ЗАПРОС (сырая строка): {"command": "create", "data": {"name": "Без группы"}}
+<<< ОТВЕТ (error, код validation_error): Отсутствуют обязательные поля: group, grades
+>>> ЗАПРОС (сырая строка): {"data": {"id": 1}}
+<<< ОТВЕТ (error, код protocol_error): В запросе отсутствует обязательное поле 'command'
+>>> ЗАПРОС (сырая строка): {это совсем не корректный JSON
+<<< ОТВЕТ (error, код protocol_error): Некорректный JSON: Expecting property name enclosed in double quotes (позиция 1)
+>>> ЗАПРОС: {"command": "create", "data": {"name": "Плохие Оценки Студент", "group": "ИУ7-31Б", "grades": [9, 10]}}
+<<< ОТВЕТ (error, код validation_error): Оценка 9 вне диапазона 2..5
+>>> ЗАПРОС: {"command": "sleep", "data": {"seconds": 3}}
+!!! ТАЙМ-АУТ: Тайм-аут 1.5 с: сервер не ответил вовремя
+>>> ЗАПРОС: {"command": "ping", "data": {"echo": "клиент переподключился после тайм-аута"}}
+<<< ОТВЕТ (ok): {"pong": true, "echo": "клиент переподключился после тайм-аута", "time": 1791721464.8890378}
+>>> ЗАПРОС: {"command": "status", "data": {}}
+<<< ОТВЕТ (ok): {"server": "running", "transport": "TCP", "protocol": "newline-delimited JSON", "students_count": 3, "groups": ["ИУ7-31Б", "ИУ7-32Б"], "average_grade": 4.03, "uptime_seconds": 2.21, "completed_commands": 12, "active_connections": 2, "total_connections": 4}
+--- журнал клиента (stderr, модуль logging) ---
+2026-10-11 15:24:23 INFO    [MainThread] Подключение к серверу 127.0.0.1:5509 установлено
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "ping", "data": {}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"pong":true,"echo":"","time":1791721463.3818717}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "status", "data": {}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"server":"running","transport":"TCP","protocol":"newline-delimited JSON","students_count":3,"groups":["ИУ7-31Б","ИУ7-32Б"],"average_grade":4.03,"uptime_seconds":0.7,"completed_commands":0,"active_connections":1,"total_connections":3}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "list", "data": {}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"count":3,"students":[{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"email":"ivanov@bmstu.ru","year":2,"status":"active","average_grade":4.75},{"id":2,"name":"Петрова Анна Сергеевна","group":"ИУ7-31Б","grades":[4,4,3,5],"email":"petrova@bmstu.ru","year":2,"status":"active","average_grade":4.0},{"id":3,"name":"Сидоров Пётр Алексеевич","group":"ИУ7-32Б","grades":[3,4,3],"email":"sidorov@bmstu.ru","year":2,"status":"academic_leave","average_grade":3.33}]}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "get", "data": {"id": 1}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"email":"ivanov@bmstu.ru","year":2,"status":"active","average_grade":4.75}}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "average_grade", "data": {"id": 1}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"grades_count":4,"average_grade":4.75,"min_grade":4,"max_grade":5}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "average_grade", "data": {"id": 2}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"id":2,"name":"Петрова Анна Сергеевна","group":"ИУ7-31Б","grades":[4,4,3,5],"grades_count":4,"average_grade":4.0,"min_grade":3,"max_grade":5}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "average_grade", "data": {"id": 3}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"id":3,"name":"Сидоров Пётр Алексеевич","group":"ИУ7-32Б","grades":[3,4,3],"grades_count":3,"average_grade":3.33,"min_grade":3,"max_grade":4}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "create", "data": {"name": "Кузнецов Артём Игоревич", "group": "ИУ7-33Б", "grades": [5, 4, 5], "email": "kuznetsov@bmstu.ru", "year": 3}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":4,"name":"Кузнецов Артём Игоревич","group":"ИУ7-33Б","grades":[5,4,5],"email":"kuznetsov@bmstu.ru","year":3,"status":"active","average_grade":4.67},"message":"Студент создан"}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "get", "data": {"id": 4}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":4,"name":"Кузнецов Артём Игоревич","group":"ИУ7-33Б","grades":[5,4,5],"email":"kuznetsov@bmstu.ru","year":3,"status":"active","average_grade":4.67}}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "update", "data": {"id": 4, "grades": [5, 5, 5], "group": "ИУ7-34Б"}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":4,"name":"Кузнецов Артём Игоревич","group":"ИУ7-34Б","grades":[5,5,5],"email":"kuznetsov@bmstu.ru","year":3,"status":"active","average_grade":5.0},"message":"Данные студента обновлены"}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "average_grade", "data": {"id": 4}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"id":4,"name":"Кузнецов Артём Игоревич","group":"ИУ7-34Б","grades":[5,5,5],"grades_count":3,"average_grade":5.0,"min_grade":5,"max_grade":5}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "groups", "data": {}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"groups_count":3,"groups":[{"group":"ИУ7-31Б","students_count":2,"average_grade":4.38,"best_student":"Иванов Иван Иванович"},{"group":"ИУ7-32Б","students_count":1,"average_grade":3.33,"best_student":"Сидоров Пётр Алексеевич"},{"group":"ИУ7-34Б","students_count":1,"average_grade":5.0,"best_student":"Кузнецов Артём Игоревич"}]}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "list", "data": {"group": "ИУ7-31Б", "sort_by": "average"}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"count":2,"students":[{"id":2,"name":"Петрова Анна Сергеевна","group":"ИУ7-31Б","grades":[4,4,3,5],"email":"petrova@bmstu.ru","year":2,"status":"active","average_grade":4.0},{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"email":"ivanov@bmstu.ru","year":2,"status":"active","average_grade":4.75}]}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "delete", "data": {"id": 4}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":4,"name":"Кузнецов Артём Игоревич","group":"ИУ7-34Б","grades":[5,5,5],"email":"kuznetsov@bmstu.ru","year":3,"status":"active","average_grade":5.0},"message":"Студент удалён"}}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "get", "data": {"id": 4}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"error","error":"Студент с id=4 не найден","code":"not_found"}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "teleport", "data": {}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"error","error":"Неизвестная команда 'teleport'. Доступны: list, get, create, update, delete, average_grade, groups, status, ping, sleep","code":"unknown_command"}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "create", "data": {"name": "Без группы"}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"error","error":"Отсутствуют обязательные поля: group, grades","code":"validation_error"}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"data": {"id": 1}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"error","error":"В запросе отсутствует обязательное поле 'command'","code":"protocol_error"}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {это совсем не корректный JSON
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"error","error":"Некорректный JSON: Expecting property name enclosed in double quotes (позиция 1)","code":"protocol_error"}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "create", "data": {"name": "Плохие Оценки Студент", "group": "ИУ7-31Б", "grades": [9, 10]}}
+2026-10-11 15:24:23 INFO    [MainThread] Ответ сервера: {"status":"error","error":"Оценка 9 вне диапазона 2..5","code":"validation_error"}
+2026-10-11 15:24:23 INFO    [MainThread] Запрос к серверу: {"command": "sleep", "data": {"seconds": 3}}
+2026-10-11 15:24:24 INFO    [MainThread] Соединение с сервером закрыто
+2026-10-11 15:24:24 INFO    [MainThread] Подключение к серверу 127.0.0.1:5509 установлено
+2026-10-11 15:24:24 INFO    [MainThread] Запрос к серверу: {"command": "ping", "data": {"echo": "клиент переподключился после тайм-аута"}}
+2026-10-11 15:24:24 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"pong":true,"echo":"клиент переподключился после тайм-аута","time":1791721464.8890378}}
+2026-10-11 15:24:24 INFO    [MainThread] Запрос к серверу: {"command": "status", "data": {}}
+2026-10-11 15:24:24 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"server":"running","transport":"TCP","protocol":"newline-delimited JSON","students_count":3,"groups":["ИУ7-31Б","ИУ7-32Б"],"average_grade":4.03,"uptime_seconds":2.21,"completed_commands":12,"active_connections":2,"total_connections":4}}
+2026-10-11 15:24:24 INFO    [MainThread] Соединение с сервером закрыто
+--- код возврата: 0 ---
+
+------------------------------------------------------------------------------
+4. КОНСОЛЬНОЕ МЕНЮ КЛИЕНТА (интерактивный режим, stdin из файла)
+------------------------------------------------------------------------------
+Входные строки: demo/scripts/demo1_menu_stdin.txt
+
+=== КЛИЕНТ УНИВЕРСИТЕТА === сервер 127.0.0.1:5509, тайм-аут 5.0 с
+
+=== КЛИЕНТ: Университет (вариант 4) ===
+ 1. list          -- список студентов (с необязательным фильтром)
+ 2. get           -- получить студента по id
+ 3. create        -- создать студента
+ 4. update        -- изменить данные студента
+ 5. delete        -- удалить студента
+ 6. average_grade -- средний балл студента (спец. команда варианта)
+ 7. groups        -- сводка по учебным группам
+ 8. status        -- состояние сервера
+ 9. timeout       -- демонстрация тайм-аута (sleep 3 с, тайм-аут 1 с)
+ 0. выход
+
+Введите команду: Группа (Enter -- все): >>> ЗАПРОС: {"command": "list", "data": {}}
+<<< ОТВЕТ (ok): {"count": 3, "students": [{"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "email": "ivanov@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.75}, {"id": 2, "name": "Петрова Анна Сергеевна", "group": "ИУ7-31Б", "grades": [4, 4, 3, 5], "email": "petrova@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.0}, {"id": 3, "name": "Сидоров Пётр Алексеевич", "group": "ИУ7-32Б", "grades": [3, 4, 3], "email": "sidorov@bmstu.ru", "year": 2, "status": "academic_leave", "average_grade": 3.33}]}
+Введите команду: Введите id: >>> ЗАПРОС: {"command": "get", "data": {"id": "1"}}
+<<< ОТВЕТ (ok): {"student": {"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "email": "ivanov@bmstu.ru", "year": 2, "status": "active", "average_grade": 4.75}}
+Введите команду: Введите id: >>> ЗАПРОС: {"command": "average_grade", "data": {"id": "1"}}
+<<< ОТВЕТ (ok): {"id": 1, "name": "Иванов Иван Иванович", "group": "ИУ7-31Б", "grades": [5, 4, 5, 5], "grades_count": 4, "average_grade": 4.75, "min_grade": 4, "max_grade": 5}
+Введите команду: >>> ЗАПРОС: {"command": "status", "data": {}}
+<<< ОТВЕТ (ok): {"server": "running", "transport": "TCP", "protocol": "newline-delimited JSON", "students_count": 3, "groups": ["ИУ7-31Б", "ИУ7-32Б"], "average_grade": 4.03, "uptime_seconds": 2.28, "completed_commands": 15, "active_connections": 2, "total_connections": 5}
+Введите команду: Группа (Enter -- все): >>> ЗАПРОС: {"command": "groups", "data": {}}
+<<< ОТВЕТ (ok): {"groups_count": 2, "groups": [{"group": "ИУ7-31Б", "students_count": 2, "average_grade": 4.38, "best_student": "Иванов Иван Иванович"}, {"group": "ИУ7-32Б", "students_count": 1, "average_grade": 3.33, "best_student": "Сидоров Пётр Алексеевич"}]}
+Введите команду: Завершение работы клиента
+--- журнал клиента (stderr, модуль logging) ---
+2026-10-11 15:24:24 INFO    [MainThread] Подключение к серверу 127.0.0.1:5509 установлено
+2026-10-11 15:24:24 INFO    [MainThread] Запрос к серверу: {"command": "list", "data": {}}
+2026-10-11 15:24:24 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"count":3,"students":[{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"email":"ivanov@bmstu.ru","year":2,"status":"active","average_grade":4.75},{"id":2,"name":"Петрова Анна Сергеевна","group":"ИУ7-31Б","grades":[4,4,3,5],"email":"petrova@bmstu.ru","year":2,"status":"active","average_grade":4.0},{"id":3,"name":"Сидоров Пётр Алексеевич","group":"ИУ7-32Б","grades":[3,4,3],"email":"sidorov@bmstu.ru","year":2,"status":"academic_leave","average_grade":3.33}]}}
+2026-10-11 15:24:24 INFO    [MainThread] Запрос к серверу: {"command": "get", "data": {"id": "1"}}
+2026-10-11 15:24:24 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"student":{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"email":"ivanov@bmstu.ru","year":2,"status":"active","average_grade":4.75}}}
+2026-10-11 15:24:24 INFO    [MainThread] Запрос к серверу: {"command": "average_grade", "data": {"id": "1"}}
+2026-10-11 15:24:24 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"id":1,"name":"Иванов Иван Иванович","group":"ИУ7-31Б","grades":[5,4,5,5],"grades_count":4,"average_grade":4.75,"min_grade":4,"max_grade":5}}
+2026-10-11 15:24:24 INFO    [MainThread] Запрос к серверу: {"command": "status", "data": {}}
+2026-10-11 15:24:24 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"server":"running","transport":"TCP","protocol":"newline-delimited JSON","students_count":3,"groups":["ИУ7-31Б","ИУ7-32Б"],"average_grade":4.03,"uptime_seconds":2.28,"completed_commands":15,"active_connections":2,"total_connections":5}}
+2026-10-11 15:24:24 INFO    [MainThread] Запрос к серверу: {"command": "groups", "data": {}}
+2026-10-11 15:24:24 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"groups_count":2,"groups":[{"group":"ИУ7-31Б","students_count":2,"average_grade":4.38,"best_student":"Иванов Иван Иванович"},{"group":"ИУ7-32Б","students_count":1,"average_grade":3.33,"best_student":"Сидоров Пётр Алексеевич"}]}}
+2026-10-11 15:24:24 INFO    [MainThread] Соединение с сервером закрыто
+--- код возврата: 0 ---
+
+------------------------------------------------------------------------------
+5. СЕРВЕР ПРОДОЛЖАЕТ РАБОТУ ПОСЛЕ ОТКЛЮЧЕНИЯ КЛИЕНТОВ
+------------------------------------------------------------------------------
+Все предыдущие клиенты уже завершились; новый клиент успешно получает статус.
+
+=== КЛИЕНТ УНИВЕРСИТЕТА === сервер 127.0.0.1:5509, тайм-аут 5.0 с
+>>> ЗАПРОС: {"command": "status", "data": {}}
+<<< ОТВЕТ (ok): {"server": "running", "transport": "TCP", "protocol": "newline-delimited JSON", "students_count": 3, "groups": ["ИУ7-31Б", "ИУ7-32Б"], "average_grade": 4.03, "uptime_seconds": 2.34, "completed_commands": 16, "active_connections": 2, "total_connections": 6}
+--- журнал клиента (stderr, модуль logging) ---
+2026-10-11 15:24:25 INFO    [MainThread] Подключение к серверу 127.0.0.1:5509 установлено
+2026-10-11 15:24:25 INFO    [MainThread] Запрос к серверу: {"command": "status", "data": {}}
+2026-10-11 15:24:25 INFO    [MainThread] Ответ сервера: {"status":"ok","data":{"server":"running","transport":"TCP","protocol":"newline-delimited JSON","students_count":3,"groups":["ИУ7-31Б","ИУ7-32Б"],"average_grade":4.03,"uptime_seconds":2.34,"completed_commands":16,"active_connections":2,"total_connections":6}}
+2026-10-11 15:24:25 INFO    [MainThread] Соединение с сервером закрыто
+--- код возврата: 0 ---
+
+------------------------------------------------------------------------------
+6. ПОЛНЫЙ ЖУРНАЛ СЕРВЕРА (модуль logging: запуск, подключения, команды, ошибки)
+------------------------------------------------------------------------------
+2026-10-11 15:24:22 INFO    [MainThread] Загружены демонстрационные данные: 3 студента
+2026-10-11 15:24:22 INFO    [MainThread] Сервер запущен: 127.0.0.1:5509 (тайм-аут клиента 30.0 с, поддержано команд: 10)
+2026-10-11 15:24:22 INFO    [udp-server] UDP-сервер запущен: 127.0.0.1:5509 (команда: status)
+2026-10-11 15:24:23 INFO    [MainThread] Клиент подключён: 127.0.0.1:50087 (всего подключений: 1, активных: 1)
+2026-10-11 15:24:23 INFO    [client_0] Клиент 127.0.0.1:50087 отключился (закрыл соединение)
+2026-10-11 15:24:23 INFO    [client_0] Соединение с 127.0.0.1:50087 закрыто
+2026-10-11 15:24:23 INFO    [MainThread] Клиент подключён: 127.0.0.1:50088 (всего подключений: 2, активных: 1)
+2026-10-11 15:24:23 INFO    [client_0] Клиент 127.0.0.1:50088 отключился (закрыл соединение)
+2026-10-11 15:24:23 INFO    [client_0] Соединение с 127.0.0.1:50088 закрыто
+2026-10-11 15:24:23 INFO    [MainThread] Клиент подключён: 127.0.0.1:50089 (всего подключений: 3, активных: 1)
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "ping", "data": {}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'ping' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "status", "data": {}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'status' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "list", "data": {}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'list' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "get", "data": {"id": 1}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'get' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "average_grade", "data": {"id": 1}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'average_grade' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "average_grade", "data": {"id": 2}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'average_grade' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "average_grade", "data": {"id": 3}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'average_grade' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "create", "data": {"name": "Кузнецов Артём Игоревич", "group": "ИУ7-33Б", "grades": [5, 4, 5], "email": "kuznetsov@bmstu.ru", "year": 3}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'create' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "get", "data": {"id": 4}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'get' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "update", "data": {"id": 4, "grades": [5, 5, 5], "group": "ИУ7-34Б"}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'update' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "average_grade", "data": {"id": 4}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'average_grade' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "groups", "data": {}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'groups' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "list", "data": {"group": "ИУ7-31Б", "sort_by": "average"}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'list' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "delete", "data": {"id": 4}}
+2026-10-11 15:24:23 INFO    [client_0] Команда 'delete' успешно выполнена для 127.0.0.1:50089
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "get", "data": {"id": 4}}
+2026-10-11 15:24:23 ERROR   [client_0] Команда 'get' завершилась ошибкой для 127.0.0.1:50089: Студент с id=4 не найден
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "teleport", "data": {}}
+2026-10-11 15:24:23 ERROR   [client_0] Команда 'teleport' завершилась ошибкой для 127.0.0.1:50089: Неизвестная команда 'teleport'. Доступны: list, get, create, update, delete, average_grade, groups, status, ping, sleep
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "create", "data": {"name": "Без группы"}}
+2026-10-11 15:24:23 ERROR   [client_0] Команда 'create' завершилась ошибкой для 127.0.0.1:50089: Отсутствуют обязательные поля: group, grades
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"data": {"id": 1}}
+2026-10-11 15:24:23 ERROR   [client_0] Ошибочный запрос от 127.0.0.1:50089: В запросе отсутствует обязательное поле 'command'
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {это совсем не корректный JSON
+2026-10-11 15:24:23 ERROR   [client_0] Ошибочный запрос от 127.0.0.1:50089: Некорректный JSON: Expecting property name enclosed in double quotes (позиция 1)
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "create", "data": {"name": "Плохие Оценки Студент", "group": "ИУ7-31Б", "grades": [9, 10]}}
+2026-10-11 15:24:23 ERROR   [client_0] Команда 'create' завершилась ошибкой для 127.0.0.1:50089: Оценка 9 вне диапазона 2..5
+2026-10-11 15:24:23 INFO    [client_0] Получена команда от 127.0.0.1:50089: {"command": "sleep", "data": {"seconds": 3}}
+2026-10-11 15:24:23 WARNING [client_0] Команда sleep: сервер занят 3.0 с (клиент 127.0.0.1:50089)
+2026-10-11 15:24:24 INFO    [MainThread] Клиент подключён: 127.0.0.1:50090 (всего подключений: 4, активных: 2)
+2026-10-11 15:24:24 INFO    [client_1] Получена команда от 127.0.0.1:50090: {"command": "ping", "data": {"echo": "клиент переподключился после тайм-аута"}}
+2026-10-11 15:24:24 INFO    [client_1] Команда 'ping' успешно выполнена для 127.0.0.1:50090
+2026-10-11 15:24:24 INFO    [client_1] Получена команда от 127.0.0.1:50090: {"command": "status", "data": {}}
+2026-10-11 15:24:24 INFO    [client_1] Команда 'status' успешно выполнена для 127.0.0.1:50090
+2026-10-11 15:24:24 INFO    [client_1] Клиент 127.0.0.1:50090 отключился (закрыл соединение)
+2026-10-11 15:24:24 INFO    [client_1] Соединение с 127.0.0.1:50090 закрыто
+2026-10-11 15:24:24 INFO    [MainThread] Клиент подключён: 127.0.0.1:50091 (всего подключений: 5, активных: 2)
+2026-10-11 15:24:24 INFO    [client_1] Получена команда от 127.0.0.1:50091: {"command": "list", "data": {}}
+2026-10-11 15:24:24 INFO    [client_1] Команда 'list' успешно выполнена для 127.0.0.1:50091
+2026-10-11 15:24:24 INFO    [client_1] Получена команда от 127.0.0.1:50091: {"command": "get", "data": {"id": "1"}}
+2026-10-11 15:24:24 INFO    [client_1] Команда 'get' успешно выполнена для 127.0.0.1:50091
+2026-10-11 15:24:24 INFO    [client_1] Получена команда от 127.0.0.1:50091: {"command": "average_grade", "data": {"id": "1"}}
+2026-10-11 15:24:24 INFO    [client_1] Команда 'average_grade' успешно выполнена для 127.0.0.1:50091
+2026-10-11 15:24:24 INFO    [client_1] Получена команда от 127.0.0.1:50091: {"command": "status", "data": {}}
+2026-10-11 15:24:24 INFO    [client_1] Команда 'status' успешно выполнена для 127.0.0.1:50091
+2026-10-11 15:24:24 INFO    [client_1] Получена команда от 127.0.0.1:50091: {"command": "groups", "data": {}}
+2026-10-11 15:24:24 INFO    [client_1] Команда 'groups' успешно выполнена для 127.0.0.1:50091
+2026-10-11 15:24:24 INFO    [client_1] Клиент 127.0.0.1:50091 отключился (закрыл соединение)
+2026-10-11 15:24:24 INFO    [client_1] Соединение с 127.0.0.1:50091 закрыто
+2026-10-11 15:24:25 INFO    [MainThread] Клиент подключён: 127.0.0.1:50092 (всего подключений: 6, активных: 2)
+2026-10-11 15:24:25 INFO    [client_1] Получена команда от 127.0.0.1:50092: {"command": "status", "data": {}}
+2026-10-11 15:24:25 INFO    [client_1] Команда 'status' успешно выполнена для 127.0.0.1:50092
+2026-10-11 15:24:25 INFO    [client_1] Клиент 127.0.0.1:50092 отключился (закрыл соединение)
+2026-10-11 15:24:25 INFO    [client_1] Соединение с 127.0.0.1:50092 закрыто
+
+------------------------------------------------------------------------------
+7. ОСВОБОЖДЕНИЕ ПОРТА
+------------------------------------------------------------------------------
+Порт 5509 свободен после остановки сервера: да

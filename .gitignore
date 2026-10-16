@@ -1,0 +1,36 @@
+# Виртуальные окружения и кэши Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+
+# Секреты и локальные настройки (в репозитории остаются только .env.example)
+.env
+.env.local
+*.env.local
+
+# Базы данных и журналы, создаваемые при запуске
+*.db
+*.sqlite3
+*.log
+logs/
+
+# Отчётные документы (в репозиторий не входят)
+Старый отчёты/
+
+# Служебные файлы Office и резервные копии отчётов
+~$*.docx
+*.backup_*.docx
+
+# Покрытие тестов
+.coverage
+coverage.xml
+htmlcov/

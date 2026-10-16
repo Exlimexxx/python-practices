@@ -1,0 +1,78 @@
+
+==============================================================================
+7. РЕЖИМ FALLBACK: НЕДОСТУПНЫЕ СЕРВЕРЫ MONGODB И REDIS
+==============================================================================
+MongoDB режим : memory
+MongoDB ошибка: ServerSelectionTimeoutError: No servers found yet, Timeout: 0.3s, Topology Description: <TopologyDescription id: 6acc0ba5389ca682537d22fd, topology_type: Unknown, servers: [<ServerDescription ('127.0.0.1', 1) server_type: Unknown, rtt: None>]>
+Redis режим   : memory
+Redis ошибка  : TimeoutError: Timeout connecting to server
+INFO     app.repository     | Индексы созданы: ['genres_rating', 'director_name', 'year_desc']
+INFO     app.repository     | Создан фильм 'Побег из Шоушенка' c _id=1
+INFO     app.repository     | Создан фильм 'Крёстный отец' c _id=2
+INFO     app.repository     | Создан фильм 'Тёмный рыцарь' c _id=3
+INFO     app.repository     | Создан фильм 'Криминальное чтиво' c _id=4
+INFO     app.repository     | Создан фильм 'Форрест Гамп' c _id=5
+INFO     app.repository     | Создан фильм 'Начало' c _id=6
+INFO     app.repository     | Создан фильм 'Матрица' c _id=7
+INFO     app.repository     | Создан фильм 'Интерстеллар' c _id=8
+INFO     app.repository     | Создан фильм 'Бойцовский клуб' c _id=9
+INFO     app.repository     | Создан фильм 'Леон' c _id=10
+INFO     app.repository     | Создан фильм 'Гладиатор' c _id=11
+INFO     app.repository     | Создан фильм 'Отступники' c _id=12
+INFO     app.repository     | Создан фильм 'Джанго освобождённый' c _id=13
+INFO     app.repository     | Создан фильм 'Престиж' c _id=14
+INFO     app.repository     | Создан фильм 'Властелин колец: Братство Кольца' c _id=15
+INFO     app.repository     | Создан фильм 'Властелин колец: Две крепости' c _id=16
+INFO     app.repository     | Создан фильм 'Паразиты' c _id=17
+INFO     app.repository     | Создан фильм 'Джокер' c _id=18
+INFO     app.repository     | Создан фильм 'Однажды в Голливуде' c _id=19
+INFO     app.repository     | Создан фильм 'Гравитация' c _id=20
+INFO     app.repository     | Создан фильм 'Дюна' c _id=21
+INFO     app.repository     | Создан фильм 'Бегущий по лезвию 2049' c _id=22
+INFO     app.repository     | Создан фильм 'Оппенгеймер' c _id=23
+INFO     app.repository     | Создан фильм 'Барби' c _id=24
+Тип хранилища : InMemoryDatabase
+Тип клиента   : InMemoryRedis
+Индексы       : ['genres_rating', 'director_name', 'year_desc']
+Загружено документов: 24
+
+==============================================================================
+FALLBACK: CRUD в in-memory хранилище
+==============================================================================
+Найден фильм      : 'Побег из Шоушенка' (1994), реж. Фрэнк Дарабонт, драма, 142 мин, рейтинг 9.3, статус showing
+Фильтров по жанру 'драма': 14
+Топ по рейтингу   : [{'title': 'Побег из Шоушенка', 'rating': 9.3, '_id': 1}, {'title': 'Крёстный отец', 'rating': 9.2, '_id': 2}, {'title': 'Тёмный рыцарь', 'rating': 9.0, '_id': 3}]
+INFO     app.repository     | update _id=1 изменений=True
+INFO     app.service        | Инвалидация кэша movie:1 -> удалено ключей: 0
+После update      : 9.5
+
+==============================================================================
+FALLBACK: агрегация в in-memory хранилище
+==============================================================================
+    {'_id': 'драма', 'count': 14}
+    {'_id': 'фантастика', 'count': 7}
+    {'_id': 'триллер', 'count': 6}
+    {'_id': 'боевик', 'count': 5}
+    {'_id': 'криминал', 'count': 4}
+
+==============================================================================
+FALLBACK: Redis-подобный кэш (SET/GET/TTL/INCR/HSET/ZADD)
+==============================================================================
+SET/GET     : значение
+TTL         : 30
+INCR        : 1 2
+HGETALL     : {'a': 1, 'b': 2}
+ZREVRANGE   : [('two', 2.0), ('one', 1.0)]
+
+==============================================================================
+FALLBACK: cache-aside в сервисе
+==============================================================================
+INFO     app.service        | Кэш очищен, удалено ключей: 1
+INFO     app.service        | CACHE MISS cinema:movie:1 -> обращение к MongoDB
+INFO     app.service        | Данные помещены в Redis: cinema:movie:1 (TTL=30 c)
+INFO     app.service        | CACHE HIT  cinema:movie:1 (TTL=30 c)
+Первый запрос (MISS): Побег из Шоушенка
+Второй запрос (HIT): Побег из Шоушенка
+Статистика кэша    : {'hits': 1, 'misses': 1}
+
+Все операции выполнены без реальных серверов — приложение осталось работоспособным.

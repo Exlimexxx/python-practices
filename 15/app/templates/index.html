@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<h1>Панель администратора отеля</h1>
+<p class="lead">Управление номерным фондом, гостями и бронированиями. Данные хранятся в SQLite
+через SQLAlchemy ORM, интерфейс отрисовывается на сервере шаблонизатором Jinja2.</p>
+
+<section class="cards">
+    <div class="card stat">
+        <span class="stat-value">{{ stats.rooms_total }}</span>
+        <span class="stat-label">Номеров всего</span>
+    </div>
+    <div class="card stat">
+        <span class="stat-value">{{ stats.rooms_active }}</span>
+        <span class="stat-label">Доступно</span>
+    </div>
+    <div class="card stat">
+        <span class="stat-value">{{ stats.guests_total }}</span>
+        <span class="stat-label">Гостей</span>
+    </div>
+    <div class="card stat">
+        <span class="stat-value">{{ stats.bookings_confirmed }}</span>
+        <span class="stat-label">Активных броней</span>
+    </div>
+    <div class="card stat">
+        <span class="stat-value">{{ "%.0f"|format(stats.revenue) }} ₽</span>
+        <span class="stat-label">Сумма подтверждённых</span>
+    </div>
+</section>
+
+<div class="actions">
+    <a class="btn btn-primary" href="{{ url_for('web.booking_create') }}">Новое бронирование</a>
+    <a class="btn" href="{{ url_for('web.room_create') }}">Добавить номер</a>
+    <a class="btn" href="{{ url_for('web.guest_create') }}">Добавить гостя</a>
+</div>
+
+<h2>Последние бронирования</h2>
+{% if recent %}
+<table class="data-table">
+    <thead>
+    <tr><th>№</th><th>Гость</th><th>Номер</th><th>Заезд</th><th>Выезд</th><th>Ночей</th><th>Сумма</th><th>Статус</th><th></th></tr>
+    </thead>
+    <tbody>
+    {% for b in recent %}
+        <tr>
+            <td>{{ b.id }}</td>
+            <td>{{ b.guest.full_name if b.guest else '—' }}</td>
+            <td>{{ b.room.number if b.room else '—' }}</td>
+            <td>{{ b.check_in }}</td>
+            <td>{{ b.check_out }}</td>
+            <td>{{ b.nights }}</td>
+            <td>{{ "%.2f"|format(b.total_price) }} ₽</td>
+            <td><span class="badge badge-{{ b.status }}">{{ b.status_label }}</span></td>
+            <td><a href="{{ url_for('web.booking_detail', booking_id=b.id) }}">открыть</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">Бронирований пока нет. <a href="{{ url_for('web.booking_create') }}">Создать первое</a>.</p>
+{% endif %}
+{% endblock %}

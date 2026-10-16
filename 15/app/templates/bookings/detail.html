@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Бронирование №{{ booking.id }}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs">
+    <a href="{{ url_for('web.booking_list') }}">Бронирования</a> / №{{ booking.id }}
+</nav>
+<h1>Бронирование №{{ booking.id }}
+    <span class="badge badge-{{ booking.status }}">{{ booking.status_label }}</span>
+</h1>
+
+<dl class="details">
+    <dt>Гость</dt>
+    <dd><a href="{{ url_for('web.guest_detail', guest_id=booking.guest_id) }}">{{ booking.guest.full_name if booking.guest else '—' }}</a></dd>
+    <dt>Номер</dt>
+    <dd><a href="{{ url_for('web.room_detail', room_id=booking.room_id) }}">№ {{ booking.room.number if booking.room else '—' }}
+        ({{ booking.room.room_type if booking.room else '' }})</a></dd>
+    <dt>Даты</dt><dd>{{ booking.check_in }} → {{ booking.check_out }}</dd>
+    <dt>Ночей</dt><dd>{{ booking.nights }}</dd>
+    <dt>Гостей</dt><dd>{{ booking.guests_count }}</dd>
+    <dt>Цена за ночь</dt><dd>{{ "%.2f"|format(booking.room.price_per_night) if booking.room else '—' }} ₽</dd>
+    <dt>Итоговая стоимость</dt><dd class="total">{{ "%.2f"|format(booking.total_price) }} ₽</dd>
+    <dt>Комментарий</dt><dd>{{ booking.comment or '—' }}</dd>
+    <dt>Создано</dt><dd>{{ booking.created_at }}</dd>
+</dl>
+
+<div class="actions">
+    <a class="btn" href="{{ url_for('web.booking_edit', booking_id=booking.id) }}">Редактировать</a>
+    {% if booking.status == 'confirmed' %}
+        <form method="post" action="{{ url_for('web.booking_cancel', booking_id=booking.id) }}">
+            <button class="btn btn-warn" type="submit">Отменить бронь</button>
+        </form>
+    {% endif %}
+    <form method="post" action="{{ url_for('web.booking_delete', booking_id=booking.id) }}"
+          onsubmit="return confirm('Удалить бронирование?');">
+        <button class="btn btn-danger" type="submit">Удалить</button>
+    </form>
+</div>
+{% endblock %}

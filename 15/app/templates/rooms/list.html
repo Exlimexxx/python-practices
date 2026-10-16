@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Номера{% endblock %}
+{% block content %}
+<h1>Номера отеля</h1>
+
+<div class="toolbar">
+    <a class="btn btn-primary" href="{{ url_for('web.room_create') }}">+ Добавить номер</a>
+    <span class="muted">Найдено записей: {{ rooms|length }}</span>
+</div>
+
+<form class="filter-form" method="get" action="{{ url_for('web.room_list') }}">
+    <label>Поиск
+        <input type="text" name="search" value="{{ filters.search }}" placeholder="номер, тип, описание">
+    </label>
+    <label>Тип номера
+        <select name="room_type">
+            <option value="">— все —</option>
+            {% for t in room_types %}
+                <option value="{{ t }}" {{ 'selected' if filters.room_type == t else '' }}>{{ t }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>Доступность
+        <select name="is_active">
+            <option value="" {{ 'selected' if filters.is_active == '' else '' }}>— все —</option>
+            <option value="1" {{ 'selected' if filters.is_active == '1' else '' }}>только доступные</option>
+            <option value="0" {{ 'selected' if filters.is_active == '0' else '' }}>только закрытые</option>
+        </select>
+    </label>
+    <label>Мин. вместимость
+        <input type="number" name="min_capacity" min="1" max="20" value="{{ filters.min_capacity }}">
+    </label>
+    <label>Сортировка
+        <select name="sort">
+            <option value="number" {{ 'selected' if filters.sort == 'number' else '' }}>по номеру</option>
+            <option value="price" {{ 'selected' if filters.sort == 'price' else '' }}>по цене</option>
+            <option value="capacity" {{ 'selected' if filters.sort == 'capacity' else '' }}>по вместимости</option>
+            <option value="floor" {{ 'selected' if filters.sort == 'floor' else '' }}>по этажу</option>
+        </select>
+    </label>
+    <label>Порядок
+        <select name="order">
+            <option value="asc" {{ 'selected' if filters.order == 'asc' else '' }}>возрастание</option>
+            <option value="desc" {{ 'selected' if filters.order == 'desc' else '' }}>убывание</option>
+        </select>
+    </label>
+    <button class="btn" type="submit">Применить</button>
+    <a class="btn btn-link" href="{{ url_for('web.room_list') }}">Сбросить</a>
+</form>
+
+{% if rooms %}
+<table class="data-table">
+    <thead>
+    <tr><th>Номер</th><th>Тип</th><th>Этаж</th><th>Вместимость</th><th>Цена/ночь</th><th>Статус</th><th>Действия</th></tr>
+    </thead>
+    <tbody>
+    {% for room in rooms %}
+        <tr>
+            <td><a href="{{ url_for('web.room_detail', room_id=room.id) }}">№ {{ room.number }}</a></td>
+            <td>{{ room.room_type }}</td>
+            <td>{{ room.floor }}</td>
+            <td>{{ room.capacity }} чел.</td>
+            <td>{{ "%.2f"|format(room.price_per_night) }} ₽</td>
+            <td><span class="badge {{ 'badge-confirmed' if room.is_active else 'badge-cancelled' }}">{{ room.status_label }}</span></td>
+            <td class="row-actions">
+                <a href="{{ url_for('web.room_detail', room_id=room.id) }}">просмотр</a>
+                <a href="{{ url_for('web.room_edit', room_id=room.id) }}">изменить</a>
+                <form method="post" action="{{ url_for('web.room_delete', room_id=room.id) }}"
+                      onsubmit="return confirm('Удалить номер {{ room.number }} вместе с бронированиями?');">
+                    <button class="link-danger" type="submit">удалить</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">По заданным условиям номера не найдены.</p>
+{% endif %}
+{% endblock %}

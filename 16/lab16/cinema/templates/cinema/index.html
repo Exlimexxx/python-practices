@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Главная — Кинотеатр{% endblock %}
+{% block content %}
+<h2>Кинотеатр «Восьмая муза»</h2>
+<p>
+    Информационная система кинотеатра: афиша фильмов, жанры, залы, расписание сеансов и продажа билетов.
+    Реализовано на Django ORM с административной панелью, поиском, фильтрацией, сортировкой,
+    пагинацией, аутентификацией и автоматическими тестами.
+</p>
+
+<h3>Основные показатели</h3>
+<table>
+    <tr><th>Фильмов</th><th>Сеансов</th><th>Жанров</th><th>Проданных билетов</th></tr>
+    <tr><td>{{ movies_total }}</td><td>{{ sessions_total }}</td><td>{{ genres_total }}</td><td>{{ tickets_total }}</td></tr>
+</table>
+
+<h3>Разделы</h3>
+<ul>
+    <li><a href="{% url 'cinema:movie_list' %}">Афиша фильмов</a> — поиск, фильтры, сортировка, пагинация;</li>
+    <li><a href="{% url 'cinema:session_list' %}">Расписание сеансов</a> — фильтр по залу и статусу;</li>
+    <li><a href="{% url 'cinema:genre_list' %}">Жанры</a> — количества фильмов по жанрам;</li>
+    <li><a href="{% url 'cinema:statistics' %}">Статистика продаж</a>;</li>
+    <li><a href="/admin/">Административная панель</a> — управление всеми моделями.</li>
+</ul>
+
+<h3>Ближайшие сеансы</h3>
+<table>
+    <tr><th>Фильм</th><th>Зал</th><th>Начало</th><th>Цена</th></tr>
+    {% for s in nearest_sessions %}
+        <tr>
+            <td><a href="{% url 'cinema:session_detail' s.pk %}">{{ s.movie.title }}</a></td>
+            <td>{{ s.hall.name }}</td>
+            <td>{{ s.start_time|date:"d.m.Y H:i" }}</td>
+            <td>{{ s.price }} ₽</td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="4">Сеансы не запланированы.</td></tr>
+    {% endfor %}
+</table>
+
+<h3>Топ фильмов по рейтингу</h3>
+<ol>
+    {% for m in top_movies %}
+        <li><a href="{% url 'cinema:movie_detail' m.pk %}">{{ m.title }}</a> — {{ m.rating }} ({{ m.genres_text }})</li>
+    {% endfor %}
+</ol>
+
+<h3>Текущий пользователь</h3>
+<p>
+    {% if user.is_authenticated %}
+        {{ user.username }}, права: {% if user.is_staff %}администратор{% else %}обычный пользователь{% endif %}.
+    {% else %}
+        Гость (просмотр разрешён, изменение требует входа).
+    {% endif %}
+</p>
+{% endblock %}

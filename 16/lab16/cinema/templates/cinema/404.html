@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Страница не найдена{% endblock %}
+{% block content %}
+<h2>404 — страница не найдена</h2>
+<p>Запрошенный адрес не существует. Проверьте ссылку или вернитесь на главную страницу.</p>
+<p><a class="btn" href="{% url 'cinema:index' %}">На главную</a></p>
+{% endblock %}

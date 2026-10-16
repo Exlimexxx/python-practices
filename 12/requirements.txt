@@ -1,0 +1,7 @@
+# Зависимости практической работы №12 (вариант 4 — Отель)
+SQLAlchemy>=2.0,<2.1
+pytest>=8.0
+
+# Драйвер PostgreSQL (нужен только при переключении на сервер PostgreSQL).
+# Строка подключения: postgresql+psycopg://hotel_user:secret@localhost:5432/hotel_db
+psycopg[binary]>=3.1

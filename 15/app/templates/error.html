@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Ошибка {{ status }}{% endblock %}
+{% block content %}
+<div class="error-page">
+    <h1>Ошибка {{ status }}</h1>
+    <p>{{ error.message if error else "Произошла непредвиденная ошибка. Данные не были изменены." }}</p>
+    <p><a class="btn btn-primary" href="{{ url_for('web.index') }}">Вернуться на главную</a></p>
+</div>
+{% endblock %}

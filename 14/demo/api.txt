@@ -1,0 +1,884 @@
+Демонстрация работы REST API «Кинотеатр — фильмы» (лабораторная №14, вариант 4)
+Python: C:\Users\Artem\AppData\Local\Programs\Python\Python313\python.exe
+Команда запуска: python -m uvicorn app.main:app --host 127.0.0.1 --port 8014
+==============================================================================
+БЛОК 1. Сервисные endpoints
+==============================================================================
+
+### Корневой endpoint
+--- GET http://127.0.0.1:8014/
+<-- HTTP 200 OK
+{
+  "service": "Cinema Movies REST API",
+  "version": "1.0.0",
+  "variant": 4,
+  "resource": "/movies",
+  "docs": "/docs",
+  "openapi": "/openapi.json"
+}
+
+### Проверка состояния и активного кэша
+--- GET http://127.0.0.1:8014/health
+<-- HTTP 200 OK
+{
+  "status": "ok",
+  "cache": "in-memory (Redis недоступен)"
+}
+
+### Swagger UI (фрагмент HTML)
+--- GET http://127.0.0.1:8014/docs
+<-- HTTP 200 OK
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    <title>Cinema Movies REST API - Swagger UI</title>
+    </head>
+    <body>
+    <div id="swagger-ui">
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <!-- `SwaggerUIBundle` is now available on the page -->
+    <script>
+    const ui = SwaggerUIBundle({
+        url: '/openapi.json',
+    "dom_id": "#swagger-ui",
+"layout": "BaseLayout",
+"deepLinking": true,
+"showExtensions": true,
+"showCommonExtensions": true,
+oauth2Redir
+
+### ReDoc (фрагмент HTML)
+--- GET http://127.0.0.1:8014/redoc
+<-- HTTP 200 OK
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>Cinema Movies REST API - ReDoc</title>
+    <!-- needed for adaptive design -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    
+    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    <!--
+    ReDoc doesn't change outer page styles
+    -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    </head>
+    <body>
+    <noscript>
+        ReDoc requires Javascript to function. Please enable it to browse the documentation.
+    </noscript>
+    <redoc spec-url="/openapi.json"></redoc>
+    <script src="ht
+==============================================================================
+БЛОК 2. Создание фильмов (POST /movies, ожидается 201)
+==============================================================================
+
+### Создание фильма «Начало»
+--- POST http://127.0.0.1:8014/movies
+--- Request body:
+{
+  "title": "Начало",
+  "director": "Кристофер Нолан",
+  "year": 2010,
+  "genre": "фантастика",
+  "duration": 148,
+  "rating": 8.8,
+  "description": "Вор проникает в сны, чтобы украсть идею."
+}
+<-- HTTP 201 Created
+{
+  "title": "Начало",
+  "director": "Кристофер Нолан",
+  "year": 2010,
+  "genre": "фантастика",
+  "duration": 148,
+  "rating": 8.8,
+  "description": "Вор проникает в сны, чтобы украсть идею.",
+  "id": 1
+}
+
+### Создание фильма «Матрица»
+--- POST http://127.0.0.1:8014/movies
+--- Request body:
+{
+  "title": "Матрица",
+  "director": "Лана Вачовски",
+  "year": 1999,
+  "genre": "фантастика",
+  "duration": 136,
+  "rating": 8.7,
+  "description": "Хакер узнаёт правду о реальности."
+}
+<-- HTTP 201 Created
+{
+  "title": "Матрица",
+  "director": "Лана Вачовски",
+  "year": 1999,
+  "genre": "фантастика",
+  "duration": 136,
+  "rating": 8.7,
+  "description": "Хакер узнаёт правду о реальности.",
+  "id": 2
+}
+
+### Создание фильма «Зелёная миля»
+--- POST http://127.0.0.1:8014/movies
+--- Request body:
+{
+  "title": "Зелёная миля",
+  "director": "Фрэнк Дарабонт",
+  "year": 1999,
+  "genre": "драма",
+  "duration": 189,
+  "rating": 9.1,
+  "description": "История о заключённых и чудесном даре."
+}
+<-- HTTP 201 Created
+{
+  "title": "Зелёная миля",
+  "director": "Фрэнк Дарабонт",
+  "year": 1999,
+  "genre": "драма",
+  "duration": 189,
+  "rating": 9.1,
+  "description": "История о заключённых и чудесном даре.",
+  "id": 3
+}
+
+### Создание фильма «Интерстеллар»
+--- POST http://127.0.0.1:8014/movies
+--- Request body:
+{
+  "title": "Интерстеллар",
+  "director": "Кристофер Нолан",
+  "year": 2014,
+  "genre": "фантастика",
+  "duration": 169,
+  "rating": 8.6,
+  "description": "Путешествие сквозь червоточину ради спасения Земли."
+}
+<-- HTTP 201 Created
+{
+  "title": "Интерстеллар",
+  "director": "Кристофер Нолан",
+  "year": 2014,
+  "genre": "фантастика",
+  "duration": 169,
+  "rating": 8.6,
+  "description": "Путешествие сквозь червоточину ради спасения Земли.",
+  "id": 4
+}
+==============================================================================
+БЛОК 3. Список, фильтрация, сортировка, пагинация
+==============================================================================
+
+### Полный список фильмов
+--- GET http://127.0.0.1:8014/movies
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Начало",
+      "director": "Кристофер Нолан",
+      "year": 2010,
+      "genre": "фантастика",
+      "duration": 148,
+      "rating": 8.8,
+      "description": "Вор проникает в сны, чтобы украсть идею.",
+      "id": 1
+    },
+    {
+      "title": "Матрица",
+      "director": "Лана Вачовски",
+      "year": 1999,
+      "genre": "фантастика",
+      "duration": 136,
+      "rating": 8.7,
+      "description": "Хакер узнаёт правду о реальности.",
+      "id": 2
+    },
+    {
+      "title": "Зелёная миля",
+      "director": "Фрэнк Дарабонт",
+      "year": 1999,
+      "genre": "драма",
+      "duration": 189,
+      "rating": 9.1,
+      "description": "История о заключённых и чудесном даре.",
+      "id": 3
+    },
+    {
+      "title": "Интерстеллар",
+      "director": "Кристофер Нолан",
+      "year": 2014,
+      "genre": "фантастика",
+      "duration": 169,
+      "rating": 8.6,
+      "description": "Путешествие сквозь червоточину ради спасения Земли.",
+      "id": 4
+    }
+  ],
+  "total": 4,
+  "limit": 20,
+  "offset": 0
+}
+
+### Пагинация: limit=2, offset=1
+--- GET http://127.0.0.1:8014/movies?limit=2&offset=1
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Матрица",
+      "director": "Лана Вачовски",
+      "year": 1999,
+      "genre": "фантастика",
+      "duration": 136,
+      "rating": 8.7,
+      "description": "Хакер узнаёт правду о реальности.",
+      "id": 2
+    },
+    {
+      "title": "Зелёная миля",
+      "director": "Фрэнк Дарабонт",
+      "year": 1999,
+      "genre": "драма",
+      "duration": 189,
+      "rating": 9.1,
+      "description": "История о заключённых и чудесном даре.",
+      "id": 3
+    }
+  ],
+  "total": 4,
+  "limit": 2,
+  "offset": 1
+}
+
+### Фильтр по жанру (кириллица, регистр не важен)
+--- GET http://127.0.0.1:8014/movies?genre=фантастика
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Начало",
+      "director": "Кристофер Нолан",
+      "year": 2010,
+      "genre": "фантастика",
+      "duration": 148,
+      "rating": 8.8,
+      "description": "Вор проникает в сны, чтобы украсть идею.",
+      "id": 1
+    },
+    {
+      "title": "Матрица",
+      "director": "Лана Вачовски",
+      "year": 1999,
+      "genre": "фантастика",
+      "duration": 136,
+      "rating": 8.7,
+      "description": "Хакер узнаёт правду о реальности.",
+      "id": 2
+    },
+    {
+      "title": "Интерстеллар",
+      "director": "Кристофер Нолан",
+      "year": 2014,
+      "genre": "фантастика",
+      "duration": 169,
+      "rating": 8.6,
+      "description": "Путешествие сквозь червоточину ради спасения Земли.",
+      "id": 4
+    }
+  ],
+  "total": 3,
+  "limit": 20,
+  "offset": 0
+}
+
+### Фильтр по минимальному рейтингу
+--- GET http://127.0.0.1:8014/movies?min_rating=8.8
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Начало",
+      "director": "Кристофер Нолан",
+      "year": 2010,
+      "genre": "фантастика",
+      "duration": 148,
+      "rating": 8.8,
+      "description": "Вор проникает в сны, чтобы украсть идею.",
+      "id": 1
+    },
+    {
+      "title": "Зелёная миля",
+      "director": "Фрэнк Дарабонт",
+      "year": 1999,
+      "genre": "драма",
+      "duration": 189,
+      "rating": 9.1,
+      "description": "История о заключённых и чудесном даре.",
+      "id": 3
+    }
+  ],
+  "total": 2,
+  "limit": 20,
+  "offset": 0
+}
+
+### Фильтр по году выпуска
+--- GET http://127.0.0.1:8014/movies?year=1999
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Матрица",
+      "director": "Лана Вачовски",
+      "year": 1999,
+      "genre": "фантастика",
+      "duration": 136,
+      "rating": 8.7,
+      "description": "Хакер узнаёт правду о реальности.",
+      "id": 2
+    },
+    {
+      "title": "Зелёная миля",
+      "director": "Фрэнк Дарабонт",
+      "year": 1999,
+      "genre": "драма",
+      "duration": 189,
+      "rating": 9.1,
+      "description": "История о заключённых и чудесном даре.",
+      "id": 3
+    }
+  ],
+  "total": 2,
+  "limit": 20,
+  "offset": 0
+}
+
+### Сортировка по рейтингу по убыванию
+--- GET http://127.0.0.1:8014/movies?sort=rating&order=desc&limit=3
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Зелёная миля",
+      "director": "Фрэнк Дарабонт",
+      "year": 1999,
+      "genre": "драма",
+      "duration": 189,
+      "rating": 9.1,
+      "description": "История о заключённых и чудесном даре.",
+      "id": 3
+    },
+    {
+      "title": "Начало",
+      "director": "Кристофер Нолан",
+      "year": 2010,
+      "genre": "фантастика",
+      "duration": 148,
+      "rating": 8.8,
+      "description": "Вор проникает в сны, чтобы украсть идею.",
+      "id": 1
+    },
+    {
+      "title": "Матрица",
+      "director": "Лана Вачовски",
+      "year": 1999,
+      "genre": "фантастика",
+      "duration": 136,
+      "rating": 8.7,
+      "description": "Хакер узнаёт правду о реальности.",
+      "id": 2
+    }
+  ],
+  "total": 4,
+  "limit": 3,
+  "offset": 0
+}
+
+### Сортировка по году по возрастанию
+--- GET http://127.0.0.1:8014/movies?sort=year&order=asc
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Матрица",
+      "director": "Лана Вачовски",
+      "year": 1999,
+      "genre": "фантастика",
+      "duration": 136,
+      "rating": 8.7,
+      "description": "Хакер узнаёт правду о реальности.",
+      "id": 2
+    },
+    {
+      "title": "Зелёная миля",
+      "director": "Фрэнк Дарабонт",
+      "year": 1999,
+      "genre": "драма",
+      "duration": 189,
+      "rating": 9.1,
+      "description": "История о заключённых и чудесном даре.",
+      "id": 3
+    },
+    {
+      "title": "Начало",
+      "director": "Кристофер Нолан",
+      "year": 2010,
+      "genre": "фантастика",
+      "duration": 148,
+      "rating": 8.8,
+      "description": "Вор проникает в сны, чтобы украсть идею.",
+      "id": 1
+    },
+    {
+      "title": "Интерстеллар",
+      "director": "Кристофер Нолан",
+      "year": 2014,
+      "genre": "фантастика",
+      "duration": 169,
+      "rating": 8.6,
+      "description": "Путешествие сквозь червоточину ради спасения Земли.",
+      "id": 4
+    }
+  ],
+  "total": 4,
+  "limit": 20,
+  "offset": 0
+}
+==============================================================================
+БЛОК 4. Специальные операции варианта
+==============================================================================
+
+### Фильмы по жанру (by-genre)
+--- GET http://127.0.0.1:8014/movies/by-genre?genre=фантастика
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Начало",
+      "director": "Кристофер Нолан",
+      "year": 2010,
+      "genre": "фантастика",
+      "duration": 148,
+      "rating": 8.8,
+      "description": "Вор проникает в сны, чтобы украсть идею.",
+      "id": 1
+    },
+    {
+      "title": "Матрица",
+      "director": "Лана Вачовски",
+      "year": 1999,
+      "genre": "фантастика",
+      "duration": 136,
+      "rating": 8.7,
+      "description": "Хакер узнаёт правду о реальности.",
+      "id": 2
+    },
+    {
+      "title": "Интерстеллар",
+      "director": "Кристофер Нолан",
+      "year": 2014,
+      "genre": "фантастика",
+      "duration": 169,
+      "rating": 8.6,
+      "description": "Путешествие сквозь червоточину ради спасения Земли.",
+      "id": 4
+    }
+  ],
+  "total": 3,
+  "limit": 20,
+  "offset": 0
+}
+
+### Поиск по режиссёру (регистронезависимо)
+--- GET http://127.0.0.1:8014/movies/search?q=нолан
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Начало",
+      "director": "Кристофер Нолан",
+      "year": 2010,
+      "genre": "фантастика",
+      "duration": 148,
+      "rating": 8.8,
+      "description": "Вор проникает в сны, чтобы украсть идею.",
+      "id": 1
+    },
+    {
+      "title": "Интерстеллар",
+      "director": "Кристофер Нолан",
+      "year": 2014,
+      "genre": "фантастика",
+      "duration": 169,
+      "rating": 8.6,
+      "description": "Путешествие сквозь червоточину ради спасения Земли.",
+      "id": 4
+    }
+  ],
+  "total": 2,
+  "limit": 20,
+  "offset": 0
+}
+
+### Поиск по названию
+--- GET http://127.0.0.1:8014/movies/search?q=Матрица
+<-- HTTP 200 OK
+{
+  "items": [
+    {
+      "title": "Матрица",
+      "director": "Лана Вачовски",
+      "year": 1999,
+      "genre": "фантастика",
+      "duration": 136,
+      "rating": 8.7,
+      "description": "Хакер узнаёт правду о реальности.",
+      "id": 2
+    }
+  ],
+  "total": 1,
+  "limit": 20,
+  "offset": 0
+}
+
+### Статистика (async endpoint)
+--- GET http://127.0.0.1:8014/movies/stats
+<-- HTTP 200 OK
+{
+  "total": 4,
+  "average_rating": 8.8,
+  "max_rating": 9.1,
+  "min_rating": 8.6,
+  "total_duration": 642,
+  "by_genre": [
+    {
+      "genre": "драма",
+      "count": 1
+    },
+    {
+      "genre": "фантастика",
+      "count": 3
+    }
+  ]
+}
+==============================================================================
+БЛОК 5. Кэширование GET /movies/{id} (Redis с fallback на in-memory)
+==============================================================================
+
+### Первый запрос — cache MISS (данные из БД)
+--- GET http://127.0.0.1:8014/movies/1
+<-- HTTP 200 OK
+{
+  "title": "Начало",
+  "director": "Кристофер Нолан",
+  "year": 2010,
+  "genre": "фантастика",
+  "duration": 148,
+  "rating": 8.8,
+  "description": "Вор проникает в сны, чтобы украсть идею.",
+  "id": 1
+}
+
+### Повторный запрос — cache HIT
+--- GET http://127.0.0.1:8014/movies/1
+<-- HTTP 200 OK
+{
+  "title": "Начало",
+  "director": "Кристофер Нолан",
+  "year": 2010,
+  "genre": "фантастика",
+  "duration": 148,
+  "rating": 8.8,
+  "description": "Вор проникает в сны, чтобы украсть идею.",
+  "id": 1
+}
+==============================================================================
+БЛОК 6. PUT / PATCH / DELETE
+==============================================================================
+
+### PUT: полная замена объекта
+--- PUT http://127.0.0.1:8014/movies/1
+--- Request body:
+{
+  "title": "Начало (ремастер)",
+  "director": "Кристофер Нолан",
+  "year": 2010,
+  "genre": "фантастика",
+  "duration": 150,
+  "rating": 9.0,
+  "description": "Вор проникает в сны, чтобы украсть идею."
+}
+<-- HTTP 200 OK
+{
+  "title": "Начало (ремастер)",
+  "director": "Кристофер Нолан",
+  "year": 2010,
+  "genre": "фантастика",
+  "duration": 150,
+  "rating": 9.0,
+  "description": "Вор проникает в сны, чтобы украсть идею.",
+  "id": 1
+}
+
+### PATCH: изменяется только рейтинг
+--- PATCH http://127.0.0.1:8014/movies/1
+--- Request body:
+{
+  "rating": 9.4
+}
+<-- HTTP 200 OK
+{
+  "title": "Начало (ремастер)",
+  "director": "Кристофер Нолан",
+  "year": 2010,
+  "genre": "фантастика",
+  "duration": 150,
+  "rating": 9.4,
+  "description": "Вор проникает в сны, чтобы украсть идею.",
+  "id": 1
+}
+
+### DELETE: успешное удаление (ожидается 204)
+--- DELETE http://127.0.0.1:8014/movies/4
+<-- HTTP 204 No Content
+(тело ответа отсутствует — 204 No Content)
+
+### DELETE: повторное удаление (ожидается 404)
+--- DELETE http://127.0.0.1:8014/movies/4
+<-- HTTP 404 Not Found
+{
+  "error": {
+    "code": "movie_not_found",
+    "message": "Фильм с id=4 не найден",
+    "details": {
+      "movie_id": 4
+    }
+  }
+}
+==============================================================================
+БЛОК 7. Обработка ошибок (404 / 400 / 422)
+==============================================================================
+
+### 404: фильм не найден
+--- GET http://127.0.0.1:8014/movies/999999
+<-- HTTP 404 Not Found
+{
+  "error": {
+    "code": "movie_not_found",
+    "message": "Фильм с id=999999 не найден",
+    "details": {
+      "movie_id": 999999
+    }
+  }
+}
+
+### 400: некорректное поле сортировки
+--- GET http://127.0.0.1:8014/movies?sort=несуществующее_поле
+<-- HTTP 400 Bad Request
+{
+  "error": {
+    "code": "invalid_query",
+    "message": "Недопустимое поле сортировки 'несуществующее_поле'",
+    "details": {
+      "allowed": [
+        "director",
+        "duration",
+        "genre",
+        "id",
+        "rating",
+        "title",
+        "year"
+      ]
+    }
+  }
+}
+
+### 400: некорректное направление сортировки
+--- GET http://127.0.0.1:8014/movies?order=sideways
+<-- HTTP 400 Bad Request
+{
+  "error": {
+    "code": "invalid_query",
+    "message": "Недопустимое направление сортировки 'sideways'",
+    "details": {
+      "allowed": [
+        "asc",
+        "desc"
+      ]
+    }
+  }
+}
+
+### 422: рейтинг вне диапазона 0..10
+--- POST http://127.0.0.1:8014/movies
+--- Request body:
+{
+  "title": "Некорректный",
+  "director": "Кристофер Нолан",
+  "year": 2010,
+  "genre": "фантастика",
+  "duration": 148,
+  "rating": 99,
+  "description": "Вор проникает в сны, чтобы украсть идею."
+}
+<-- HTTP 422 Unprocessable Content
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Ошибка валидации входных данных",
+    "details": [
+      {
+        "type": "less_than_equal",
+        "loc": [
+          "body",
+          "rating"
+        ],
+        "msg": "Input should be less than or equal to 10",
+        "input": 99,
+        "ctx": {
+          "le": 10.0
+        }
+      }
+    ]
+  }
+}
+
+### 422: отсутствует обязательное поле title
+--- POST http://127.0.0.1:8014/movies
+--- Request body:
+{
+  "director": "Тест",
+  "year": 2020,
+  "genre": "тест",
+  "duration": 90,
+  "rating": 5.0
+}
+<-- HTTP 422 Unprocessable Content
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Ошибка валидации входных данных",
+    "details": [
+      {
+        "type": "missing",
+        "loc": [
+          "body",
+          "title"
+        ],
+        "msg": "Field required",
+        "input": {
+          "director": "Тест",
+          "year": 2020,
+          "genre": "тест",
+          "duration": 90,
+          "rating": 5.0
+        }
+      }
+    ]
+  }
+}
+
+### 404: несуществующий маршрут (единый формат ошибки)
+--- GET http://127.0.0.1:8014/unknown-endpoint
+<-- HTTP 404 Not Found
+{
+  "error": {
+    "code": "not_found",
+    "message": "Not Found",
+    "details": null
+  }
+}
+==============================================================================
+БЛОК 8. Выгрузка OpenAPI-схемы
+==============================================================================
+GET http://127.0.0.1:8014/openapi.json -> HTTP 200
+Схема сохранена в demo/openapi.txt. Эндпоинтов: 7
+Пути:
+  GET  /movies/by-genre
+  GET  /movies/search
+  GET  /movies/stats
+  GET, POST  /movies
+  GET, PUT, PATCH, DELETE  /movies/{movie_id}
+  GET  /
+  GET  /health
+Схемы Pydantic: ErrorResponse, GenreStat, MovieCreate, MovieListResponse, MovieResponse, MovieStats, MovieUpdate
+==============================================================================
+ЛОГ СЕРВЕРА UVICORN (реальный вывод процесса)
+==============================================================================
+INFO:     Started server process [640]
+INFO:     Waiting for application startup.
+2026-10-12 01:19:23,916 | INFO     | app.main | Запуск Cinema Movies REST API v1.0.0 (env=development)
+2026-10-12 01:19:23,960 | INFO     | app.database | Схема БД инициализирована (sqlite:///./movies_demo.db)
+2026-10-12 01:19:28,084 | WARNING  | app.cache | Redis недоступен (Error 22 connecting to localhost:6379. Удаленный компьютер отклонил это сетевое подключение.). Используется in-memory кэш.
+2026-10-12 01:19:28,084 | INFO     | app.main | Активный кэш: in-memory (Redis недоступен)
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8014 (Press CTRL+C to quit)
+2026-10-12 01:19:28,641 | INFO     | app.main | GET /health -> 200 (21.7 ms)
+2026-10-12 01:19:28,870 | INFO     | app.main | GET / -> 200 (1.1 ms)
+2026-10-12 01:19:28,872 | INFO     | app.main | GET /health -> 200 (0.5 ms)
+2026-10-12 01:19:28,873 | INFO     | app.main | GET /docs -> 200 (0.2 ms)
+2026-10-12 01:19:28,875 | INFO     | app.main | GET /redoc -> 200 (0.1 ms)
+2026-10-12 01:19:28,891 | INFO     | app.services.movie | Создан фильм id=1 'Начало'
+2026-10-12 01:19:28,892 | INFO     | app.main | POST /movies -> 201 (15.5 ms)
+2026-10-12 01:19:28,905 | INFO     | app.services.movie | Создан фильм id=2 'Матрица'
+2026-10-12 01:19:28,905 | INFO     | app.main | POST /movies -> 201 (11.9 ms)
+2026-10-12 01:19:28,915 | INFO     | app.services.movie | Создан фильм id=3 'Зелёная миля'
+2026-10-12 01:19:28,916 | INFO     | app.main | POST /movies -> 201 (9.3 ms)
+2026-10-12 01:19:28,924 | INFO     | app.services.movie | Создан фильм id=4 'Интерстеллар'
+2026-10-12 01:19:28,925 | INFO     | app.main | POST /movies -> 201 (7.9 ms)
+2026-10-12 01:19:28,928 | INFO     | app.main | GET /movies -> 200 (3.0 ms)
+2026-10-12 01:19:28,932 | INFO     | app.main | GET /movies?limit=2&offset=1 -> 200 (2.2 ms)
+2026-10-12 01:19:28,936 | INFO     | app.main | GET /movies?genre=%D1%84%D0%B0%D0%BD%D1%82%D0%B0%D1%81%D1%82%D0%B8%D0%BA%D0%B0 -> 200 (3.1 ms)
+2026-10-12 01:19:28,943 | INFO     | app.main | GET /movies?min_rating=8.8 -> 200 (5.6 ms)
+2026-10-12 01:19:28,949 | INFO     | app.main | GET /movies?year=1999 -> 200 (4.3 ms)
+2026-10-12 01:19:28,954 | INFO     | app.main | GET /movies?sort=rating&order=desc&limit=3 -> 200 (3.6 ms)
+2026-10-12 01:19:28,959 | INFO     | app.main | GET /movies?sort=year&order=asc -> 200 (3.4 ms)
+2026-10-12 01:19:28,963 | INFO     | app.main | GET /movies/by-genre?genre=%D1%84%D0%B0%D0%BD%D1%82%D0%B0%D1%81%D1%82%D0%B8%D0%BA%D0%B0 -> 200 (3.4 ms)
+2026-10-12 01:19:28,971 | INFO     | app.main | GET /movies/search?q=%D0%BD%D0%BE%D0%BB%D0%B0%D0%BD -> 200 (5.8 ms)
+2026-10-12 01:19:28,976 | INFO     | app.main | GET /movies/search?q=%D0%9C%D0%B0%D1%82%D1%80%D0%B8%D1%86%D0%B0 -> 200 (3.5 ms)
+2026-10-12 01:19:28,986 | INFO     | app.main | GET /movies/stats -> 200 (7.8 ms)
+2026-10-12 01:19:28,988 | INFO     | app.services.movie | cache MISS movie:1 -> запрос в БД
+2026-10-12 01:19:28,990 | INFO     | app.main | GET /movies/1 -> 200 (2.5 ms)
+2026-10-12 01:19:28,993 | INFO     | app.services.movie | cache HIT movie:1
+2026-10-12 01:19:28,993 | INFO     | app.main | GET /movies/1 -> 200 (1.1 ms)
+2026-10-12 01:19:29,007 | INFO     | app.services.movie | cache INVALIDATE movie:1
+2026-10-12 01:19:29,007 | INFO     | app.main | PUT /movies/1 -> 200 (12.2 ms)
+2026-10-12 01:19:29,020 | INFO     | app.services.movie | cache INVALIDATE movie:1
+2026-10-12 01:19:29,021 | INFO     | app.main | PATCH /movies/1 -> 200 (11.9 ms)
+2026-10-12 01:19:29,034 | INFO     | app.services.movie | cache INVALIDATE movie:4
+2026-10-12 01:19:29,034 | INFO     | app.services.movie | Удалён фильм id=4
+2026-10-12 01:19:29,034 | INFO     | app.main | DELETE /movies/4 -> 204 (11.8 ms)
+2026-10-12 01:19:29,037 | WARNING  | app.main | Доменная ошибка movie_not_found: Фильм с id=4 не найден
+2026-10-12 01:19:29,038 | WARNING  | app.main | DELETE /movies/4 -> 404 (2.2 ms)
+2026-10-12 01:19:29,040 | INFO     | app.services.movie | cache MISS movie:999999 -> запрос в БД
+2026-10-12 01:19:29,041 | WARNING  | app.main | Доменная ошибка movie_not_found: Фильм с id=999999 не найден
+2026-10-12 01:19:29,041 | WARNING  | app.main | GET /movies/999999 -> 404 (1.9 ms)
+2026-10-12 01:19:29,049 | WARNING  | app.main | Доменная ошибка invalid_query: Недопустимое поле сортировки 'несуществующее_поле'
+2026-10-12 01:19:29,049 | WARNING  | app.main | GET /movies?sort=%D0%BD%D0%B5%D1%81%D1%83%D1%89%D0%B5%D1%81%D1%82%D0%B2%D1%83%D1%8E%D1%89%D0%B5%D0%B5_%D0%BF%D0%BE%D0%BB%D0%B5 -> 400 (1.6 ms)
+2026-10-12 01:19:29,052 | WARNING  | app.main | Доменная ошибка invalid_query: Недопустимое направление сортировки 'sideways'
+2026-10-12 01:19:29,052 | WARNING  | app.main | GET /movies?order=sideways -> 400 (1.2 ms)
+2026-10-12 01:19:29,054 | WARNING  | app.main | Ошибка валидации /movies: [{'type': 'less_than_equal', 'loc': ('body', 'rating'), 'msg': 'Input should be less than or equal to 10', 'input': 99, 'ctx': {'le': 10.0}}]
+2026-10-12 01:19:29,054 | WARNING  | app.main | POST /movies -> 422 (1.3 ms)
+2026-10-12 01:19:29,057 | WARNING  | app.main | Ошибка валидации /movies: [{'type': 'missing', 'loc': ('body', 'title'), 'msg': 'Field required', 'input': {'director': 'Тест', 'year': 2020, 'genre': 'тест', 'duration': 90, 'rating': 5.0}}]
+2026-10-12 01:19:29,057 | WARNING  | app.main | POST /movies -> 422 (1.2 ms)
+2026-10-12 01:19:29,058 | WARNING  | app.main | GET /unknown-endpoint -> 404 (0.3 ms)
+2026-10-12 01:19:29,104 | INFO     | app.main | GET /openapi.json -> 200 (44.4 ms)
+

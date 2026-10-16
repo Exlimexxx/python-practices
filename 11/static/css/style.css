@@ -1,0 +1,41 @@
+/* Оформление страницы афиши кинотеатра. Файл раздаётся CDN-сервером. */
+:root {
+  --bg: #10131a;
+  --card: #1b2130;
+  --accent: #f5c518;
+  --text: #eef1f7;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 32px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+h1 { font-size: 26px; margin: 0 0 24px; }
+
+.posters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.poster-card {
+  background: var(--card);
+  border-radius: 12px;
+  overflow: hidden;
+  width: 300px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.poster-card img { display: block; width: 100%; height: auto; }
+
+.poster-card .meta { padding: 12px 16px 18px; }
+
+.poster-card h2 { font-size: 18px; margin: 0 0 6px; }
+
+.rating { color: var(--accent); font-weight: 600; }

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Удаление сеанса{% endblock %}
+{% block content %}
+<h2>Подтверждение удаления</h2>
+<p>Вы действительно хотите удалить объект «{{ object }}»?</p>
+<form method="post">
+    {% csrf_token %}
+    <button class="btn danger" type="submit">Удалить</button>
+    <a class="btn secondary" href="{% url 'cinema:session_detail' object.pk %}">Отмена</a>
+</form>
+{% endblock %}

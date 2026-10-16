@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{% if object %}Редактирование сеанса{% else %}Новый сеанс{% endif %}{% endblock %}
+{% block content %}
+<h2>{% if object %}Редактирование сеанса #{{ object.pk }}{% else %}Новый сеанс{% endif %}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Сохранить</button>
+    <a class="btn secondary" href="{% url 'cinema:session_list' %}">Отмена</a>
+</form>
+{% endblock %}

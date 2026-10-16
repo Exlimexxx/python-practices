@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Отель{% endblock %} · Отель «Гранд»</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="{{ url_for('web.index') }}">🏨 Отель «Гранд»</a>
+    <nav class="main-nav">
+        <a href="{{ url_for('web.index') }}" class="{{ 'active' if active == 'index' else '' }}">Главная</a>
+        <a href="{{ url_for('web.room_list') }}" class="{{ 'active' if active == 'rooms' else '' }}">Номера</a>
+        <a href="{{ url_for('web.guest_list') }}" class="{{ 'active' if active == 'guests' else '' }}">Гости</a>
+        <a href="{{ url_for('web.booking_list') }}" class="{{ 'active' if active == 'bookings' else '' }}">Бронирования</a>
+        <a href="{{ url_for('api.api_index') }}" target="_blank" rel="noopener">REST API</a>
+    </nav>
+</header>
+
+<main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flashes">
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <p>Лабораторная работа №15 · Flask + SQLAlchemy · Вариант 4 «Отель»</p>
+</footer>
+</body>
+</html>

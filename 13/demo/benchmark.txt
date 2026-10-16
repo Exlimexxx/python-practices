@@ -1,0 +1,42 @@
+INFO     app.repository     | Индексы созданы: ['genres_rating', 'director_name', 'year_desc']
+INFO     app.repository     | Создан фильм 'Побег из Шоушенка' c _id=6acc0b831f722f28eb03a0f4
+INFO     app.repository     | Создан фильм 'Крёстный отец' c _id=6acc0b831f722f28eb03a0f5
+INFO     app.repository     | Создан фильм 'Тёмный рыцарь' c _id=6acc0b831f722f28eb03a0f6
+INFO     app.repository     | Создан фильм 'Криминальное чтиво' c _id=6acc0b831f722f28eb03a0f7
+INFO     app.repository     | Создан фильм 'Форрест Гамп' c _id=6acc0b831f722f28eb03a0f8
+INFO     app.repository     | Создан фильм 'Начало' c _id=6acc0b831f722f28eb03a0f9
+INFO     app.repository     | Создан фильм 'Матрица' c _id=6acc0b831f722f28eb03a0fa
+INFO     app.repository     | Создан фильм 'Интерстеллар' c _id=6acc0b831f722f28eb03a0fb
+INFO     app.repository     | Создан фильм 'Бойцовский клуб' c _id=6acc0b831f722f28eb03a0fc
+INFO     app.repository     | Создан фильм 'Леон' c _id=6acc0b831f722f28eb03a0fd
+INFO     app.repository     | Создан фильм 'Гладиатор' c _id=6acc0b831f722f28eb03a0fe
+INFO     app.repository     | Создан фильм 'Отступники' c _id=6acc0b831f722f28eb03a0ff
+INFO     app.repository     | Создан фильм 'Джанго освобождённый' c _id=6acc0b831f722f28eb03a100
+INFO     app.repository     | Создан фильм 'Престиж' c _id=6acc0b831f722f28eb03a101
+INFO     app.repository     | Создан фильм 'Властелин колец: Братство Кольца' c _id=6acc0b831f722f28eb03a102
+INFO     app.repository     | Создан фильм 'Властелин колец: Две крепости' c _id=6acc0b831f722f28eb03a103
+INFO     app.repository     | Создан фильм 'Паразиты' c _id=6acc0b831f722f28eb03a104
+INFO     app.repository     | Создан фильм 'Джокер' c _id=6acc0b831f722f28eb03a105
+INFO     app.repository     | Создан фильм 'Однажды в Голливуде' c _id=6acc0b831f722f28eb03a106
+INFO     app.repository     | Создан фильм 'Гравитация' c _id=6acc0b831f722f28eb03a107
+INFO     app.repository     | Создан фильм 'Дюна' c _id=6acc0b831f722f28eb03a108
+INFO     app.repository     | Создан фильм 'Бегущий по лезвию 2049' c _id=6acc0b831f722f28eb03a109
+INFO     app.repository     | Создан фильм 'Оппенгеймер' c _id=6acc0b831f722f28eb03a10a
+INFO     app.repository     | Создан фильм 'Барби' c _id=6acc0b831f722f28eb03a10b
+
+==============================================================================
+6. ИЗМЕРЕНИЕ ПРОИЗВОДИТЕЛЬНОСТИ: MONGODB vs REDIS (кэш)
+==============================================================================
+MongoDB : реальный сервер
+Redis   : in-memory fallback
+          причина: TimeoutError: Timeout connecting to server
+Документов movie: 24
+ Запросов |   MongoDB, с |  Mongo, мс/зап |   Redis, с |  Redis, мс/зап | Ускорение
+-----------------------------------------------------------------------------------
+      100 |     0.022385 |       0.223847 |   0.000523 |       0.005229 |     42.81
+     1000 |     0.189963 |       0.189963 |   0.005501 |       0.005501 |     34.53
+    10000 |     3.236198 |       0.323620 |   0.068019 |       0.006802 |     47.58
+
+Вывод: кэш Redis отвечает за единицы микросекунд, тогда как обращение к MongoDB
+включает сетевой обмен и работу хранилища, поэтому на каждые 10 000 запросов
+экономия заметна. Цель — не абсолютная победа Redis, а снижение нагрузки на БД.
